@@ -64,7 +64,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		120A44852D9B05A900E244A3 /* Exceptions for "FastVLM App" folder in "YAME" target */ = {
+		120A44852D9B05A900E244A3 /* Exceptions for "YAME" folder in "YAME" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -88,12 +88,12 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		019A3E0B2D78E6A00055F93B /* FastVLM App */ = {
+		019A3E0B2D78E6A00055F93B /* YAME */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				120A44852D9B05A900E244A3 /* Exceptions for "FastVLM App" folder in "YAME" target */,
+				120A44852D9B05A900E244A3 /* Exceptions for "YAME" folder in "YAME" target */,
 			);
-			path = "FastVLM App";
+			path = YAME;
 			sourceTree = "<group>";
 		};
 		C32B4A802DA4805400EF663D /* Configuration */ = {
@@ -115,6 +115,11 @@
 				C3ED54BB2D791BEA005E20B3 /* Exceptions for "FastVLM" folder in "FastVLM" target */,
 			);
 			path = FastVLM;
+			sourceTree = "<group>";
+		};
+		E457BFDD2DD4431300AEE5A4 /* Speech */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Speech;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -162,8 +167,9 @@
 				12FFAF3E2DC93583009C4EFA /* README.md */,
 				12FFAF3D2DC93583009C4EFA /* get_pretrained_mlx_model.sh */,
 				C32B4A802DA4805400EF663D /* Configuration */,
+				E457BFDD2DD4431300AEE5A4 /* Speech */,
 				C35372AF2D08C32D00474D34 /* Video */,
-				019A3E0B2D78E6A00055F93B /* FastVLM App */,
+				019A3E0B2D78E6A00055F93B /* YAME */,
 				C39BB3E72D79082A005DB8FB /* FastVLM */,
 				C35EDB7F2D076C3C00757E80 /* Frameworks */,
 				C35EDB702D076A5A00757E80 /* Products */,
@@ -223,7 +229,7 @@
 				C3ED55042D7A0A7A005E20B3 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				019A3E0B2D78E6A00055F93B /* FastVLM App */,
+				019A3E0B2D78E6A00055F93B /* YAME */,
 			);
 			name = YAME;
 			packageProductDependencies = (
@@ -433,13 +439,13 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = "FastVLM App/FastVLM.entitlements";
+				CODE_SIGN_ENTITLEMENTS = YAME/YAME.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0.1.0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_ASSET_PATHS = "\"FastVLM App/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"YAME/Preview Content\"";
 				DEVELOPMENT_TEAM = 2WRET6WW2J;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -461,7 +467,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "FastVLM App/Info.plist";
+				INFOPLIST_FILE = YAME/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use camera to get live feed of images";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -531,13 +537,13 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_ENTITLEMENTS = "FastVLM App/FastVLM.entitlements";
+				CODE_SIGN_ENTITLEMENTS = YAME/YAME.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0.1.0;
+				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_ASSET_PATHS = "\"FastVLM App/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"YAME/Preview Content\"";
 				DEVELOPMENT_TEAM = 2WRET6WW2J;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -553,7 +559,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "FastVLM App/Info.plist";
+				INFOPLIST_FILE = YAME/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use camera to get live feed of images";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

@@ -1,6 +1,8 @@
 //
-// For licensing see accompanying LICENSE file.
-// Copyright (C) 2025 Apple Inc. All Rights Reserved.
+//  MediaProcessingExtensions.swift
+//  YAME
+//
+//  Created by LuoHuanyu on 2025/5/14.
 //
 
 import Accelerate
