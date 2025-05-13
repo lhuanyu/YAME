@@ -293,17 +293,22 @@ private enum Vision {
             let w = NSNumber(value: image.dim(3))
 
             return data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) in
-                // wrap the backing of the MLXArray
-                let array = try! MLMultiArray(
-                    dataPointer: ptr.baseAddress!, shape: [1, 3, h, w], dataType: .float32,
-                    strides: strides.map { .init(value: $0) })
+                do {
+                    // wrap the backing of the MLXArray
+                    let array = try MLMultiArray(
+                        dataPointer: ptr.baseAddress!, shape: [1, 3, h, w], dataType: .float32,
+                        strides: strides.map { .init(value: $0) })
 
-                // inference
-                let output = try! model().prediction(images: array)
-                precondition(output.image_features.shape == [1, 256, 3072])
-                precondition(output.image_features.dataType == .float32)
-                return output.image_features.withUnsafeBytes { ptr in
-                    MLXArray(ptr, [1, 256, 3072], type: Float32.self)
+                    // inference
+                    let output = try model().prediction(images: array)
+                    precondition(output.image_features.shape == [1, 256, 3072])
+                    precondition(output.image_features.dataType == .float32)
+                    return output.image_features.withUnsafeBytes { ptr in
+                        MLXArray(ptr, [1, 256, 3072], type: Float32.self)
+                    }
+                } catch {
+                    print(error)
+                    return MLXArray()
                 }
             }
         }
