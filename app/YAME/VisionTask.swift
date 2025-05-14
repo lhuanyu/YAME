@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Localize_Swift
 
 struct VisionTask: Codable, Identifiable, Hashable {
     var id: String {
@@ -89,5 +88,13 @@ extension VisionTask {
         identifyTrafficSignal,
         facialExpression
     ]
+    
+}
+
+public extension String {
+
+    func localized() -> String {
+        return NSLocalizedString(self, comment: "")
+    }
     
 }

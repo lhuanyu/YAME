@@ -27,7 +27,7 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
         var language: String = Locale.current.identifier
     }
 
-    let voice = AVSpeechSynthesisVoice(language: "zh-CN")
+    let voice = AVSpeechSynthesisVoice(language: Locale.current.identifier)
 
     private var currentConfig = Config()
     private var speechFinishedContinuation: CheckedContinuation<Void, Never>?

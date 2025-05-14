@@ -9,7 +9,6 @@ import AVFoundation
 import MLXLMCommon
 import SwiftUI
 import Video
-import Localize_Swift
 
 // support swift 6
 extension CVImageBuffer: @unchecked @retroactive Sendable {}
@@ -245,7 +244,7 @@ struct ContentView: View {
                 .navigationBarTitleDisplayMode(.inline)
             #endif
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .automatic) {
                     Button {
                         isShowingInfo.toggle()
                     } label: {
@@ -253,7 +252,7 @@ struct ContentView: View {
                     }
                 }
 
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     menu
                 }
 
