@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "About" : {
+
+    },
     "Camera Type" : {
 
     },
@@ -66,6 +69,9 @@
         }
       }
     },
+    "Restore" : {
+
+    },
     "Rock Paper Scissors" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -87,6 +93,9 @@
         }
       }
     },
+    "Settings" : {
+
+    },
     "Speaking…" : {
       "localizations" : {
         "zh-Hans" : {
@@ -96,6 +105,15 @@
           }
         }
       }
+    },
+    "Speech" : {
+
+    },
+    "Speech Enabled" : {
+
+    },
+    "Speech Rate" : {
+
     },
     "Stop Speaking" : {
       "localizations" : {

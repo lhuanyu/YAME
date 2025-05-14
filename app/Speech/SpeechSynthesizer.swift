@@ -6,9 +6,16 @@
 //
 
 import AVFoundation
+import SwiftUI
 
 final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked Sendable {
     static let shared = SpeechSynthesizer()
+
+    var isEnabled: Bool {
+        ///获取AppStorage的值
+        UserDefaults.standard.bool(forKey: "speechEnabled")
+    }
+
     static private(set) var isSpeaking: Bool = false {
         didSet {
             NotificationCenter.default.post(name: .speechSynthesizerSpeakingChanged, object: nil)
@@ -34,9 +41,9 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
 
     func speak(_ text: String, config: Config? = nil) {
         print("Speaking: \(text)")
-        
-        let utterance = AVSpeechUtterance(string: text)
+
         let cfg = config ?? currentConfig
+        let utterance = AVSpeechUtterance(string: text)
         utterance.rate = cfg.rate
         utterance.volume = cfg.volume
         utterance.pitchMultiplier = cfg.pitchMultiplier

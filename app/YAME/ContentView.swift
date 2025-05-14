@@ -258,7 +258,7 @@ struct ContentView: View {
 
             }
             .sheet(isPresented: $isShowingInfo) {
-
+                SettingsView()
             }
             .safeAreaInset(edge: .bottom) {
                 HStack {
@@ -354,7 +354,7 @@ struct ContentView: View {
             let t = await model.generate(userInput)
             _ = await t.result
             // 等待语音播报结束
-            if !model.output.isEmpty {
+            if SpeechSynthesizer.shared.isEnabled {
                 await SpeechSynthesizer.shared.speakAndWait(model.output)
             }
             do {
