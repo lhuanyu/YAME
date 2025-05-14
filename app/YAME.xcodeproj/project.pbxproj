@@ -21,6 +21,7 @@
 		C3ED545B2D790AD6005E20B3 /* Transformers in Frameworks */ = {isa = PBXBuildFile; productRef = C3ED545A2D790AD6005E20B3 /* Transformers */; };
 		C3ED55012D7A0A7A005E20B3 /* FastVLM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C39BB3E62D79082A005DB8FB /* FastVLM.framework */; };
 		C3ED55022D7A0A7A005E20B3 /* FastVLM.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C39BB3E62D79082A005DB8FB /* FastVLM.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E47D17982DD4C19D0041A9CE /* Localize_Swift in Frameworks */ = {isa = PBXBuildFile; productRef = E47D17972DD4C19D0041A9CE /* Localize_Swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,10 +81,22 @@
 		};
 		C3ED54BB2D791BEA005E20B3 /* Exceptions for "FastVLM" folder in "FastVLM" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				model_0.5b.zip,
+				model_1.5b.zip,
+				model_7b.zip,
+			);
 			publicHeaders = (
 				FastVLM.h,
 			);
 			target = C39BB3E52D79082A005DB8FB /* FastVLM */;
+		};
+		E457BFE02DD4698900AEE5A4 /* Exceptions for "Speech" folder in "YAME" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SpeechSynthesizer.swift,
+			);
+			target = 019A3E092D78E6A00055F93B /* YAME */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -119,6 +132,9 @@
 		};
 		E457BFDD2DD4431300AEE5A4 /* Speech */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E457BFE02DD4698900AEE5A4 /* Exceptions for "Speech" folder in "YAME" target */,
+			);
 			path = Speech;
 			sourceTree = "<group>";
 		};
@@ -130,6 +146,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				019A3E1C2D78E73E0055F93B /* MLXLMCommon in Frameworks */,
+				E47D17982DD4C19D0041A9CE /* Localize_Swift in Frameworks */,
 				019A3E212D78E7530055F93B /* Video.framework in Frameworks */,
 				C3ED55012D7A0A7A005E20B3 /* FastVLM.framework in Frameworks */,
 				019A3E1E2D78E7470055F93B /* MLXRandom in Frameworks */,
@@ -237,6 +254,7 @@
 				019A3E1B2D78E73E0055F93B /* MLXLMCommon */,
 				019A3E1D2D78E7470055F93B /* MLXRandom */,
 				019A3E1F2D78E74C0055F93B /* MLXVLM */,
+				E47D17972DD4C19D0041A9CE /* Localize_Swift */,
 			);
 			productName = FastVLMCameraExample;
 			productReference = 019A3E0A2D78E6A00055F93B /* YAME.app */;
@@ -322,6 +340,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = C35EDB632D07699400757E80;
 			minimizedProjectReferenceProxies = 1;
@@ -329,6 +348,7 @@
 				C35EDB6A2D076A3900757E80 /* XCRemoteSwiftPackageReference "mlx-swift-examples" */,
 				C35EDB8A2D07777E00757E80 /* XCRemoteSwiftPackageReference "mlx-swift" */,
 				C3ED54592D790AC6005E20B3 /* XCRemoteSwiftPackageReference "swift-transformers" */,
+				E47D17962DD4C19D0041A9CE /* XCRemoteSwiftPackageReference "Localize-Swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C35EDB702D076A5A00757E80 /* Products */;
@@ -820,6 +840,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Debug;
 		};
@@ -855,6 +876,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};
@@ -1116,6 +1138,14 @@
 				minimumVersion = 0.1.18;
 			};
 		};
+		E47D17962DD4C19D0041A9CE /* XCRemoteSwiftPackageReference "Localize-Swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marmelroy/Localize-Swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1168,6 +1198,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C3ED54592D790AC6005E20B3 /* XCRemoteSwiftPackageReference "swift-transformers" */;
 			productName = Transformers;
+		};
+		E47D17972DD4C19D0041A9CE /* Localize_Swift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E47D17962DD4C19D0041A9CE /* XCRemoteSwiftPackageReference "Localize-Swift" */;
+			productName = Localize_Swift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

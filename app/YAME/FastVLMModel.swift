@@ -91,7 +91,7 @@ class FastVLMModel {
         }
 
         running = true
-        
+
         // Cancel any existing task
         currentTask?.cancel()
 
@@ -102,20 +102,20 @@ class FastVLMModel {
 
                 // each time you generate you will get something new
                 MLXRandom.seed(UInt64(Date.timeIntervalSinceReferenceDate * 1000))
-                
+
                 // Check if task was cancelled
                 if Task.isCancelled { return }
 
                 let result = try await modelContainer.perform { context in
                     // Measure the time it takes to prepare the input
-                    
+
                     Task { @MainActor in
                         evaluationState = .processingPrompt
                     }
 
                     let llmStart = Date()
                     let input = try await context.processor.prepare(input: userInput)
-                    
+
                     var seenFirstToken = false
 
                     // FastVLM generates the output
@@ -129,7 +129,7 @@ class FastVLMModel {
 
                         if !seenFirstToken {
                             seenFirstToken = true
-                            
+
                             // produced first token, update the time to first token,
                             // the processing state and start displaying the text
                             let llmDuration = Date().timeIntervalSince(llmStart)
@@ -155,14 +155,15 @@ class FastVLMModel {
                             return .more
                         }
                     }
-                    
+
                     // Return the duration of the LLM and the result
                     return result
                 }
-                
+
                 // Check if task was cancelled before updating UI
                 if !Task.isCancelled {
                     self.output = result.output
+                    SpeechSynthesizer.shared.stop()
                 }
 
             } catch {
@@ -177,16 +178,17 @@ class FastVLMModel {
 
             running = false
         }
-        
+
         currentTask = task
         return task
     }
-    
+
     public func cancel() {
         currentTask?.cancel()
         currentTask = nil
         running = false
         output = ""
         promptTime = ""
+        SpeechSynthesizer.shared.stop()
     }
 }

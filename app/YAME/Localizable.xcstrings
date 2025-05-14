@@ -1,0 +1,128 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Camera Type" : {
+
+    },
+    "Describe Image" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "描述图片"
+          }
+        }
+      }
+    },
+    "Describe the image in English." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅用中文描述图片。"
+          }
+        }
+      }
+    },
+    "How many fingers am I holding up?" : {
+      "extractionState" : "manual"
+    },
+    "Idle" : {
+
+    },
+    "Output should be brief, about 15 words or less." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "简洁输出，输出不应该超过30个字。"
+          }
+        }
+      }
+    },
+    "Prompt" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提示词"
+          }
+        }
+      }
+    },
+    "Respond with a single number. If no hands are detected, respond with 0." : {
+      "extractionState" : "manual"
+    },
+    "Response" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回复"
+          }
+        }
+      }
+    },
+    "Rock Paper Scissors" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剪刀石头布"
+          }
+        }
+      }
+    },
+    "Seeing..." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "观察中…"
+          }
+        }
+      }
+    },
+    "Speaking…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播报中…"
+          }
+        }
+      }
+    },
+    "Stop Speaking" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止播报"
+          }
+        }
+      }
+    },
+    "Thinking…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "思考中…"
+          }
+        }
+      }
+    },
+    "TTFT %@" : {
+
+    },
+    "YAME" : {
+
+    }
+  },
+  "version" : "1.0"
+}

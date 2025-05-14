@@ -35,8 +35,8 @@ public class CameraController: NSObject {
 
     private var permissionGranted = true
     private var captureSession: AVCaptureSession?
-    private let sessionQueue = DispatchQueue(label: "sessionQueue")
-    @objc dynamic private var rotationCoordinator : AVCaptureDevice.RotationCoordinator?
+    private let sessionQueue = DispatchQueue(label: "sessionQueue", qos: .userInteractive)
+    @objc dynamic private var rotationCoordinator: AVCaptureDevice.RotationCoordinator?
     private var rotationObservation: NSKeyValueObservation?
 
     public func attach(continuation: AsyncStream<CMSampleBuffer>.Continuation) {
@@ -70,6 +70,21 @@ public class CameraController: NSObject {
         }
     }
 
+    public func startAsync() async {
+        return await withCheckedContinuation { continuation in
+            sessionQueue.async { [self] in
+                let captureSession = AVCaptureSession()
+                self.captureSession = captureSession
+
+                self.checkPermission()
+                self.setupCaptureSession(position: backCamera ? .back : .front)
+                captureSession.startRunning()
+
+                continuation.resume()
+            }
+        }
+    }
+
     #if os(iOS)
         private func setOrientation(_ orientation: UIDeviceOrientation) {
             guard let captureSession else { return }
@@ -96,13 +111,13 @@ public class CameraController: NSObject {
                 }
             }
         }
-    
-    private func updateRotation(rotation : CGFloat) {
-        guard let captureSession else { return }
-        for output in captureSession.outputs {
-            output.connection(with: .video)?.videoRotationAngle = rotation
+
+        private func updateRotation(rotation: CGFloat) {
+            guard let captureSession else { return }
+            for output in captureSession.outputs {
+                output.connection(with: .video)?.videoRotationAngle = rotation
+            }
         }
-    }
     #endif
 
     func checkPermission() {
@@ -127,11 +142,11 @@ public class CameraController: NSObject {
             self.permissionGranted = granted
         }
     }
+    
+    let videoOutput = AVCaptureVideoDataOutput()
 
     func setupCaptureSession(position: AVCaptureDevice.Position) {
         guard let captureSession else { return }
-
-        let videoOutput = AVCaptureVideoDataOutput()
 
         guard permissionGranted else {
             print("No permission for camera")
@@ -177,18 +192,25 @@ public class CameraController: NSObject {
         }
         captureSession.addInput(videoDeviceInput)
 
-        videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "sampleBufferQueue"))
         captureSession.addOutput(videoOutput)
-        captureSession.sessionPreset = AVCaptureSession.Preset.hd1920x1080
+        captureSession.sessionPreset = AVCaptureSession.Preset.hd1280x720
 
         #if os(iOS)
-        rotationCoordinator = AVCaptureDevice.RotationCoordinator(device: videoDevice, previewLayer: nil)
-        rotationObservation = observe(\.rotationCoordinator!.videoRotationAngleForHorizonLevelCapture, options: [.initial, .new]) { [weak self] _, change in
-            if let nv = change.newValue {
-                self?.updateRotation(rotation: nv)
+            rotationCoordinator = AVCaptureDevice.RotationCoordinator(
+                device: videoDevice, previewLayer: nil)
+            rotationObservation = observe(
+                \.rotationCoordinator!.videoRotationAngleForHorizonLevelCapture,
+                options: [.initial, .new]
+            ) { [weak self] _, change in
+                if let nv = change.newValue {
+                    self?.updateRotation(rotation: nv)
+                }
             }
-        }
         #endif
+    }
+    
+    public func setSampleBufferDelegate() {
+        videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "sampleBufferQueue"))
     }
 }
 

@@ -9,6 +9,7 @@ import AVFoundation
 import MLXLMCommon
 import SwiftUI
 import Video
+import Localize_Swift
 
 // support swift 6
 extension CVImageBuffer: @unchecked @retroactive Sendable {}
@@ -24,27 +25,27 @@ struct ContentView: View {
     /// stream of frames -> VideoFrameView, see distributeVideoFrames
     @State private var framesToDisplay: AsyncStream<CVImageBuffer>?
 
-    @State private var prompt = "Describe the image in English."
-    @State private var promptSuffix = "Output should be brief, about 15 words or less."
+    @State private var selectedTask: VisionTask = .describeImage
 
     @State private var isShowingInfo: Bool = false
 
     @State private var selectedCameraType: CameraType = .continuous
     @State private var isEditingPrompt: Bool = false
+    @State private var isSpeaking: Bool = false
 
     var toolbarItemPlacement: ToolbarItemPlacement {
         var placement: ToolbarItemPlacement = .navigation
         #if os(iOS)
-        placement = .topBarLeading
+            placement = .topBarLeading
         #endif
         return placement
     }
-    
-    var statusTextColor : Color {
+
+    var statusTextColor: Color {
         return model.evaluationState == .processingPrompt ? .black : .white
     }
-    
-    var statusBackgroundColor : Color {
+
+    var statusBackgroundColor: Color {
         switch model.evaluationState {
         case .idle:
             return .gray
@@ -62,7 +63,7 @@ struct ContentView: View {
                     VStack(alignment: .leading, spacing: 10.0) {
                         Picker("Camera Type", selection: $selectedCameraType) {
                             ForEach(CameraType.allCases, id: \.self) { cameraType in
-                                Text(cameraType.rawValue.capitalized).tag(cameraType)
+                                Text(cameraType.rawValue.capitalized.localized()).tag(cameraType)
                             }
                         }
                         // Prevent macOS from adding a text label for the picker
@@ -79,82 +80,83 @@ struct ContentView: View {
                                 cameraType: selectedCameraType,
                                 action: { frame in
                                     processSingleFrame(frame)
-                                })
-                                // Because we're using the AVCaptureSession preset
-                                // `.vga640x480`, we can assume this aspect ratio
-                                .aspectRatio(4/3, contentMode: .fit)
-                                #if os(macOS)
-                                .frame(maxWidth: 750)
-                                #endif
-                                .overlay(alignment: .top) {
-                                    if !model.promptTime.isEmpty {
-                                        Text("TTFT \(model.promptTime)")
-                                            .font(.caption)
-                                            .foregroundStyle(.white)
-                                            .monospaced()
-                                            .padding(.vertical, 4.0)
-                                            .padding(.horizontal, 6.0)
-                                            .background(alignment: .center) {
-                                                RoundedRectangle(cornerRadius: 8)
-                                                    .fill(Color.black.opacity(0.6))
-                                            }
-                                            .padding(.top)
-                                    }
                                 }
-                                #if !os(macOS)
+                            )
+                            // Because we're using the AVCaptureSession preset
+                            // `.vga640x480`, we can assume this aspect ratio
+                            .aspectRatio(4 / 3, contentMode: .fit)
+                            #if os(macOS)
+                                .frame(maxWidth: 750)
+                            #endif
+                            .overlay(alignment: .top) {
+                                if !model.promptTime.isEmpty {
+                                    Text("TTFT \(model.promptTime)")
+                                        .font(.caption)
+                                        .foregroundStyle(.white)
+                                        .monospaced()
+                                        .padding(.vertical, 4.0)
+                                        .padding(.horizontal, 6.0)
+                                        .background(alignment: .center) {
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(Color.black.opacity(0.6))
+                                        }
+                                        .padding(.top)
+                                }
+                            }
+                            #if !os(macOS)
                                 .overlay(alignment: .topTrailing) {
                                     CameraControlsView(
                                         backCamera: $camera.backCamera,
                                         device: $camera.device,
-                                        devices: $camera.devices)
+                                        devices: $camera.devices
+                                    )
                                     .padding()
                                 }
-                                #endif
-                                .overlay(alignment: .bottom) {
-                                    if selectedCameraType == .continuous {
-                                        Group {
-                                            if model.evaluationState == .processingPrompt {
-                                                HStack {
-                                                    ProgressView()
-                                                        .tint(self.statusTextColor)
-                                                        .controlSize(.small)
+                            #endif
+                            .overlay(alignment: .bottom) {
+                                if selectedCameraType == .continuous {
+                                    Group {
+                                        if model.evaluationState == .processingPrompt {
+                                            HStack {
+                                                ProgressView()
+                                                    .tint(self.statusTextColor)
+                                                    .controlSize(.small)
 
-                                                    Text(model.evaluationState.rawValue)
-                                                }
-                                            } else if model.evaluationState == .idle {
-                                                HStack(spacing: 6.0) {
-                                                    Image(systemName: "clock.fill")
-                                                        .font(.caption)
-
-                                                    Text(model.evaluationState.rawValue)
-                                                }
+                                                Text(model.evaluationState.rawValue)
                                             }
-                                            else {
-                                                // I'm manually tweaking the spacing to
-                                                // better match the spacing with ProgressView
-                                                HStack(spacing: 6.0) {
-                                                    Image(systemName: "lightbulb.fill")
-                                                        .font(.caption)
+                                        } else if model.evaluationState == .idle {
+                                            HStack(spacing: 6.0) {
+                                                Image(systemName: "clock.fill")
+                                                    .font(.caption)
 
-                                                    Text(model.evaluationState.rawValue)
-                                                }
+                                                Text(model.evaluationState.rawValue)
+                                            }
+                                        } else {
+                                            // I'm manually tweaking the spacing to
+                                            // better match the spacing with ProgressView
+                                            HStack(spacing: 6.0) {
+                                                Image(systemName: "lightbulb.fill")
+                                                    .font(.caption)
+
+                                                Text(model.evaluationState.rawValue)
                                             }
                                         }
-                                        .foregroundStyle(self.statusTextColor)
-                                        .font(.caption)
-                                        .bold()
-                                        .padding(.vertical, 6.0)
-                                        .padding(.horizontal, 8.0)
-                                        .background(self.statusBackgroundColor)
-                                        .clipShape(.capsule)
-                                        .padding(.bottom)
                                     }
+                                    .foregroundStyle(self.statusTextColor)
+                                    .font(.caption)
+                                    .bold()
+                                    .padding(.vertical, 6.0)
+                                    .padding(.horizontal, 8.0)
+                                    .background(self.statusBackgroundColor)
+                                    .clipShape(.capsule)
+                                    .padding(.bottom)
                                 }
-                                #if os(macOS)
+                            }
+                            #if os(macOS)
                                 .frame(maxWidth: .infinity)
                                 .frame(minWidth: 500)
                                 .frame(minHeight: 375)
-                                #endif
+                            #endif
                         }
                     }
                 }
@@ -175,8 +177,8 @@ struct ContentView: View {
                                 .foregroundStyle(isEditingPrompt ? .secondary : .primary)
                                 .textSelection(.enabled)
                                 #if os(macOS)
-                                .font(.headline)
-                                .fontWeight(.regular)
+                                    .font(.headline)
+                                    .fontWeight(.regular)
                                 #endif
                         }
                         .frame(minHeight: 50.0, maxHeight: 200.0)
@@ -184,37 +186,46 @@ struct ContentView: View {
                 } header: {
                     Text("Response")
                         #if os(macOS)
-                        .font(.headline)
-                        .padding(.bottom, 2.0)
+                            .font(.headline)
+                            .padding(.bottom, 2.0)
                         #endif
                 }
 
                 #if os(macOS)
-                Spacer()
+                    Spacer()
                 #endif
             }
-            
+
             #if os(iOS)
-            .listSectionSpacing(0)
+                .listSectionSpacing(0)
             #elseif os(macOS)
-            .padding()
+                .padding()
             #endif
             .task {
-                camera.start()
-            }
-            .task {
+                await camera.startAsync()
+                try? await Task.sleep(for: .milliseconds(100))
                 await model.load()
+                camera.setSampleBufferDelegate()
             }
-
             #if !os(macOS)
-            .onAppear {
-                // Prevent the screen from dimming or sleeping due to inactivity
-                UIApplication.shared.isIdleTimerDisabled = true
-            }
-            .onDisappear {
-                // Resumes normal idle timer behavior
-                UIApplication.shared.isIdleTimerDisabled = false
-            }
+                .onAppear {
+                    // Prevent the screen from dimming or sleeping due to inactivity
+                    UIApplication.shared.isIdleTimerDisabled = true
+                    NotificationCenter.default.addObserver(
+                        forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
+                    ) { _ in
+                        withAnimation {
+                            isSpeaking = SpeechSynthesizer.isSpeaking
+                        }
+                    }
+                    isSpeaking = SpeechSynthesizer.isSpeaking
+                }
+                .onDisappear {
+                    // Resumes normal idle timer behavior
+                    UIApplication.shared.isIdleTimerDisabled = false
+                    NotificationCenter.default.removeObserver(
+                        self, name: .speechSynthesizerSpeakingChanged, object: nil)
+                }
             #endif
 
             // task to distribute video frames -- this will cancel
@@ -229,55 +240,80 @@ struct ContentView: View {
                 await distributeVideoFrames()
             }
 
-            .navigationTitle("FastVLM")
+            .navigationTitle("YAME")
             #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+                .navigationBarTitleDisplayMode(.inline)
             #endif
             .toolbar {
-                ToolbarItem(placement: toolbarItemPlacement) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button {
                         isShowingInfo.toggle()
-                    }
-                    label: {
-                        Image(systemName: "info.circle")
+                    } label: {
+                        Image(systemName: "gear")
                     }
                 }
 
-                ToolbarItem(placement: .primaryAction) {
-                    if isEditingPrompt {
-                        Button {
-                            isEditingPrompt.toggle()
-                        }
-                        label: {
-                            Text("Done")
-                                .fontWeight(.bold)
-                        }
-                    }
-                    else {
-                        Menu {
-                            Button("Describe image") {
-                                prompt = "Describe the image in English."
-                                promptSuffix = "Output should be brief, about 15 words or less."
-                            }
-                            Button("Facial expression") {
-                                prompt = "What is this person's facial expression?"
-                                promptSuffix = "Output only one or two words."
-                            }
-                            Button("Read text") {
-                                prompt = "What is written in this image?"
-                                promptSuffix = "Output only the text in the image."
-                            }
-                            #if !os(macOS)
-                            Button("Customize...") {
-                                isEditingPrompt.toggle()
-                            }
-                            #endif
-                        } label: { Text("Prompts") }
-                    }
+                ToolbarItem(placement: .topBarTrailing) {
+                    menu
                 }
+
             }
             .sheet(isPresented: $isShowingInfo) {
 
+            }
+            .safeAreaInset(edge: .bottom) {
+                HStack {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                    switch model.evaluationState {
+                    case .generatingResponse:
+                        Text("Thinking…")
+                    case .idle:
+                        if isSpeaking {
+                            Text("Speaking…")
+                        } else {
+                            Text("Idle")
+                        }
+                    case .processingPrompt:
+                        Text("Seeing...")
+                    }
+                    Spacer()
+                    if isSpeaking {
+                        Button(action: {
+                            SpeechSynthesizer.shared.stop()
+                        }) {
+                            Image(systemName: "stop.circle.fill")
+                                .foregroundStyle(.white)
+                            Text("Stop Speaking")
+                                .font(.caption)
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                }
+                .frame(height: 60)
+                .padding(8)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+    }
+
+    var menu: some View {
+        Menu {
+            ForEach(VisionTask.allTasks, id: \.self) { task in
+                Button {
+                    selectedTask = task
+                } label: {
+                    Text(task.name)
+                }
+            }
+        } label: {
+            if let selectedTaskIcon = selectedTask.symbol {
+                Image(systemName: selectedTaskIcon)
+            } else {
+                Image(systemName: "ellipsis.circle")
             }
         }
     }
@@ -285,13 +321,15 @@ struct ContentView: View {
     var promptSummary: some View {
         Section("Prompt") {
             VStack(alignment: .leading, spacing: 4.0) {
-                let trimmedPrompt = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmedPrompt = selectedTask.prompt.trimmingCharacters(
+                    in: .whitespacesAndNewlines)
                 if !trimmedPrompt.isEmpty {
                     Text(trimmedPrompt)
                         .foregroundStyle(.secondary)
                 }
 
-                let trimmedSuffix = promptSuffix.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmedSuffix = selectedTask.promptSuffix.trimmingCharacters(
+                    in: .whitespacesAndNewlines)
                 if !trimmedSuffix.isEmpty {
                     Text(trimmedSuffix)
                         .font(.caption)
@@ -301,77 +339,25 @@ struct ContentView: View {
         }
     }
 
-    var promptForm: some View {
-        Group {
-            #if os(iOS)
-            Section("Prompt") {
-                TextEditor(text: $prompt)
-                    .frame(minHeight: 38)
-            }
-
-            Section("Prompt Suffix") {
-                TextEditor(text: $promptSuffix)
-                    .frame(minHeight: 38)
-            }
-            #elseif os(macOS)
-            Section {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading) {
-                        Text("Prompt")
-                            .font(.headline)
-
-                        TextEditor(text: $prompt)
-                            .frame(height: 38)
-                            .padding(.horizontal, 8.0)
-                            .padding(.vertical, 10.0)
-                            .background(Color(.textBackgroundColor))
-                            .cornerRadius(10.0)
-                    }
-
-                    VStack(alignment: .leading) {
-                        Text("Prompt Suffix")
-                            .font(.headline)
-
-                        TextEditor(text: $promptSuffix)
-                            .frame(height: 38)
-                            .padding(.horizontal, 8.0)
-                            .padding(.vertical, 10.0)
-                            .background(Color(.textBackgroundColor))
-                            .cornerRadius(10.0)
-                    }
-                }
-            }
-            .padding(.vertical)
-            #endif
-        }
-    }
-
     var promptSections: some View {
         Group {
-            #if os(iOS)
-            if isEditingPrompt {
-                promptForm
-            }
-            else {
-                promptSummary
-            }
-            #elseif os(macOS)
-            promptForm
-            #endif
+            promptSummary
         }
     }
 
     func analyzeVideoFrames(_ frames: AsyncStream<CVImageBuffer>) async {
         for await frame in frames {
             let userInput = UserInput(
-                prompt: .text("\(prompt) \(promptSuffix)"),
+                prompt: .text("\(selectedTask.prompt) \(selectedTask.promptSuffix)"),
                 images: [.ciImage(CIImage(cvPixelBuffer: frame))]
             )
-            
             // generate output for a frame and wait for generation to complete
             let t = await model.generate(userInput)
             _ = await t.result
-
+            // 等待语音播报结束
+            if !model.output.isEmpty {
+                await SpeechSynthesizer.shared.speakAndWait(model.output)
+            }
             do {
                 try await Task.sleep(for: FRAME_DELAY)
             } catch { return }
@@ -439,7 +425,7 @@ struct ContentView: View {
 
         // Construct request to model
         let userInput = UserInput(
-            prompt: .text("\(prompt) \(promptSuffix)"),
+            prompt: .text("\(selectedTask.prompt) \(selectedTask.promptSuffix)"),
             images: [.ciImage(CIImage(cvPixelBuffer: frame))]
         )
 
