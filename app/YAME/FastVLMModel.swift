@@ -16,7 +16,6 @@ import MLXVLM
 @Observable
 @MainActor
 class FastVLMModel {
-
     public var running = false
     public var modelInfo = ""
     public var output = ""
@@ -68,7 +67,7 @@ class FastVLMModel {
                         "Downloading \(modelConfiguration.name): \(Int(progress.fractionCompleted * 100))%"
                 }
             }
-            self.modelInfo = "Loaded"
+            modelInfo = "Loaded"
             loadState = .loaded(modelContainer)
             return modelContainer
 
@@ -81,7 +80,7 @@ class FastVLMModel {
         do {
             _ = try await _load()
         } catch {
-            self.modelInfo = "Error loading model: \(error)"
+            modelInfo = "Error loading model: \(error)"
         }
     }
 
@@ -137,7 +136,9 @@ class FastVLMModel {
                             Task { @MainActor in
                                 evaluationState = .generatingResponse
                                 self.output = text
+                                #if DEBUG
                                 self.promptTime = "\(Int(llmDuration * 1000)) ms"
+                                #endif
                             }
                         }
 
