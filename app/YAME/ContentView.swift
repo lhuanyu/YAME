@@ -244,7 +244,7 @@ struct ContentView: View {
                 .navigationBarTitleDisplayMode(.inline)
             #endif
             .toolbar {
-                ToolbarItem(placement: .automatic) {
+                ToolbarItem(placement: .cancellationAction) {
                     Button {
                         isShowingInfo.toggle()
                     } label: {
