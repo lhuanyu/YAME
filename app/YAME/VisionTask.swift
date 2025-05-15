@@ -11,20 +11,19 @@ struct VisionTask: Codable, Identifiable, Hashable {
     var id: String {
         name
     }
-    
+
     enum Provider: String, Codable {
         case system
         case user
     }
-    
+
     var name: String
     var prompt: String
     var promptSuffix: String
     var symbol: String?
     var provider: Provider
-    
-}
 
+}
 
 extension VisionTask {
     static let describeImage = VisionTask(
@@ -34,8 +33,8 @@ extension VisionTask {
         symbol: "eye",
         provider: .system
     )
-    
-    ///识别剪刀石头布
+
+    ///Identify rock paper scissors
     static let rockPaperScissors = VisionTask(
         name: "Rock Paper Scissors".localized(),
         prompt: "Identify the hand gesture in the image.".localized(),
@@ -43,17 +42,18 @@ extension VisionTask {
         symbol: "hand.wave",
         provider: .system
     )
-    
-    ///数手指
+
+    ///Count fingers
     static let countFingers = VisionTask(
         name: "Count Fingers".localized(),
         prompt: "How many fingers am I holding up?".localized(),
-        promptSuffix: "Respond with a single number. If no hands are detected, respond with 0.".localized(),
+        promptSuffix: "Respond with a single number. If no hands are detected, respond with 0."
+            .localized(),
         symbol: "hand.raised.fingers.spread",
         provider: .system
     )
-    
-    ///识别文字
+
+    ///Recognize text
     static let recognizeText = VisionTask(
         name: "Recognize Text".localized(),
         prompt: "Recognize the text in the image.".localized(),
@@ -61,8 +61,8 @@ extension VisionTask {
         symbol: "doc.plaintext",
         provider: .system
     )
-    
-    ///识别交通信号，要给出全部的信息
+
+    ///Identify traffic signal, provide all information
     static let identifyTrafficSignal = VisionTask(
         name: "Identify Traffic Signal".localized(),
         prompt: "Identify the traffic signal in the image.".localized(),
@@ -70,7 +70,7 @@ extension VisionTask {
         symbol: "car",
         provider: .system
     )
-    
+
     ///Facial expression
     static let facialExpression = VisionTask(
         name: "Facial Expression".localized(),
@@ -79,22 +79,22 @@ extension VisionTask {
         symbol: "face.smiling".localized(),
         provider: .system
     )
-    
+
     static let allTasks: [VisionTask] = [
         describeImage,
         rockPaperScissors,
         countFingers,
         recognizeText,
         identifyTrafficSignal,
-        facialExpression
+        facialExpression,
     ]
-    
+
 }
 
-public extension String {
+extension String {
 
-    func localized() -> String {
+    public func localized() -> String {
         return NSLocalizedString(self, comment: "")
     }
-    
+
 }

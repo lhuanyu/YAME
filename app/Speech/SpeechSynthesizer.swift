@@ -12,7 +12,7 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
     static let shared = SpeechSynthesizer()
 
     var isEnabled: Bool {
-        ///获取AppStorage的值
+        ///Get AppStorage value
         UserDefaults.standard.bool(forKey: "speechEnabled")
     }
 
@@ -25,7 +25,7 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
     private override init() {
         super.init()
         synthesizer.delegate = self
-        // 初始化时加载当前配置
+        // Load current configuration during initialization
         currentConfig = Config()
     }
 
@@ -36,7 +36,7 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
         var language: String = Locale.current.identifier
 
         init() {
-            // 从UserDefaults读取设置的默认值
+            // Read default settings from UserDefaults
             if let savedRate = UserDefaults.standard.object(forKey: "speechRate") as? Double {
                 rate = Float(savedRate)
             }
@@ -77,11 +77,11 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
         currentConfig = config
     }
 
-    // MARK: - AVSpeechSynthesizerDelegate 可选实现
+    // MARK: - AVSpeechSynthesizerDelegate Optional Implementation
     func speechSynthesizer(
         _ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance
     ) {
-        // 可扩展：播报完成回调
+        // Extendable: Speech completion callback
         speechFinishedContinuation?.resume()
         speechFinishedContinuation = nil
         Self.isSpeaking = false
@@ -89,7 +89,7 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
     func speechSynthesizer(
         _ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance
     ) {
-        // 可扩展：播报取消回调
+        // Extendable: Speech cancellation callback
         speechFinishedContinuation?.resume()
         speechFinishedContinuation = nil
         Self.isSpeaking = false

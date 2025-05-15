@@ -122,10 +122,10 @@ struct ContentView: View {
                         }
                     )
                     #if os(iOS)
-                    .aspectRatio(3 / 4, contentMode: .fit)
+                        .aspectRatio(3 / 4, contentMode: .fit)
                     #else
-                    .aspectRatio(4 / 3, contentMode: .fit)
-                    .frame(maxWidth: 750)
+                        .aspectRatio(4 / 3, contentMode: .fit)
+                        .frame(maxWidth: 750)
                     #endif
                     .overlay(alignment: .topLeading) {
                         #if DEBUG
@@ -152,9 +152,9 @@ struct ContentView: View {
                     }
 
                     #if os(macOS)
-                    .frame(maxWidth: .infinity)
-                    .frame(minWidth: 500)
-                    .frame(minHeight: 375)
+                        .frame(maxWidth: .infinity)
+                        .frame(minWidth: 500)
+                        .frame(minHeight: 375)
                     #endif
                 }
 
@@ -170,27 +170,27 @@ struct ContentView: View {
                 camera.setSampleBufferDelegate()
             }
             #if !os(macOS)
-            .onAppear {
-                // Prevent the screen from dimming or sleeping due to inactivity
-                UIApplication.shared.isIdleTimerDisabled = true
-                NotificationCenter.default.addObserver(
-                    forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
-                ) { _ in
-                    withAnimation {
-                        isSpeaking = SpeechSynthesizer.isSpeaking
-                        updateTaskState()
+                .onAppear {
+                    // Prevent the screen from dimming or sleeping due to inactivity
+                    UIApplication.shared.isIdleTimerDisabled = true
+                    NotificationCenter.default.addObserver(
+                        forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
+                    ) { _ in
+                        withAnimation {
+                            isSpeaking = SpeechSynthesizer.isSpeaking
+                            updateTaskState()
+                        }
                     }
+                    isSpeaking = SpeechSynthesizer.isSpeaking
                 }
-                isSpeaking = SpeechSynthesizer.isSpeaking
-            }
-            .background(.black)
-            .onDisappear {
-                // Resumes normal idle timer behavior
-                UIApplication.shared.isIdleTimerDisabled = false
-                NotificationCenter.default.removeObserver(
-                    self, name: .speechSynthesizerSpeakingChanged, object: nil
-                )
-            }
+                .background(.black)
+                .onDisappear {
+                    // Resumes normal idle timer behavior
+                    UIApplication.shared.isIdleTimerDisabled = false
+                    NotificationCenter.default.removeObserver(
+                        self, name: .speechSynthesizerSpeakingChanged, object: nil
+                    )
+                }
             #endif
 
             // task to distribute video frames -- this will cancel
@@ -395,7 +395,7 @@ struct ContentView: View {
             // generate output for a frame and wait for generation to complete
             let t = await model.generate(userInput)
             _ = await t.result
-            // 等待语音播报结束
+            // Wait for speech to finish
             if SpeechSynthesizer.shared.isEnabled {
                 await SpeechSynthesizer.shared.speakAndWait(model.output)
             }
@@ -476,7 +476,7 @@ struct ContentView: View {
         }
     }
 
-    /// 提供触觉反馈
+    /// Provide haptic feedback
     func hapticFeedback() {
         #if !os(macOS)
             let generator = UIImpactFeedbackGenerator(style: .medium)
