@@ -22,18 +22,7 @@ public struct VideoFrameView: View {
     @State private var videoFrame: CVImageBuffer?
 
     private var backgroundColor: Color {
-        #if os(iOS)
-        return Color(.secondarySystemBackground)
-        #elseif os(macOS)
-        return Color(.secondarySystemFill)
-        #else
-        // When in doubt, use these values that I captured to match iOS' secondarySystemBackground
-        if colorScheme == .dark {
-            return Color(red: 0.11, green: 0.11, blue: 0.12)
-        } else {
-            return Color(red: 0.95, green: 0.95, blue: 0.97)
-        }
-        #endif
+        .black
     }
 
     public init(
@@ -47,7 +36,7 @@ public struct VideoFrameView: View {
     }
 
     public var body: some View {
-        Group {
+        VStack {
             if let videoFrame {
                 _ImageView(image: videoFrame)
                     .overlay(alignment: .bottom) {
@@ -74,11 +63,9 @@ public struct VideoFrameView: View {
                     .controlSize(.large)
             }
         }
-        // This ensures that we take up the full 4/3 aspect ratio
-        // even if we don't have an image to display
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(backgroundColor)
-        .clipShape(RoundedRectangle(cornerRadius: 10.0))
+        .clipShape(Rectangle())
         .task {
             // feed frames to the _ImageView
             if Task.isCancelled {
@@ -115,7 +102,6 @@ public struct VideoFrameView: View {
 #if os(iOS)
     /// Internal view to display a CVImageBuffer
     private struct _ImageView: UIViewRepresentable {
-
         let image: Any
         var gravity = CALayerContentsGravity.resizeAspectFill
 
@@ -131,7 +117,6 @@ public struct VideoFrameView: View {
     }
 #else
     private struct _ImageView: NSViewRepresentable {
-
         let image: Any
         var gravity = CALayerContentsGravity.resizeAspectFill
 

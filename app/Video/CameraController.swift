@@ -211,7 +211,13 @@ public class CameraController: NSObject {
     
     public func setSampleBufferDelegate() {
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "sampleBufferQueue"))
+        DispatchQueue.main.async {
+            self.isRunning = true
+        }
     }
+    
+    public var isRunning: Bool = false
+        
 }
 
 extension CameraController: AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -219,6 +225,9 @@ extension CameraController: AVCaptureVideoDataOutputSampleBufferDelegate {
         _ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
+        guard isRunning else {
+            return
+        }
         if sampleBuffer.isValid && sampleBuffer.imageBuffer != nil {
             framesContinuation?.yield(sampleBuffer)
         }

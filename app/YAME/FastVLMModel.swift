@@ -30,8 +30,8 @@ class FastVLMModel {
     private let modelConfiguration = FastVLM.modelConfiguration
 
     /// parameters controlling the output
-    let generateParameters = GenerateParameters(temperature: 0.0)
-    let maxTokens = 240
+    let generateParameters = GenerateParameters(temperature: 0.6)
+    let maxTokens = 120
 
     /// update the display every N tokens -- 4 looks like it updates continuously
     /// and is low overhead.  observed ~15% reduction in tokens/s when updating

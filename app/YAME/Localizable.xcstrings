@@ -4,9 +4,6 @@
     "About" : {
 
     },
-    "Camera Type" : {
-
-    },
     "Describe Image" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -24,7 +21,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "仅用中文描述图片。"
+            "value" : "用中文描述图片。"
           }
         }
       }
@@ -33,7 +30,14 @@
       "extractionState" : "manual"
     },
     "Idle" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "等待输入"
+          }
+        }
+      }
     },
     "Output should be brief, about 15 words or less." : {
       "extractionState" : "manual",
@@ -41,33 +45,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "简洁输出，输出不应该超过30个字。"
-          }
-        }
-      }
-    },
-    "Prompt" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提示词"
+            "value" : "不以“图片显示”开始恢复。"
           }
         }
       }
     },
     "Respond with a single number. If no hands are detected, respond with 0." : {
       "extractionState" : "manual"
-    },
-    "Response" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "回复"
-          }
-        }
-      }
     },
     "Restore" : {
 
@@ -83,12 +67,13 @@
         }
       }
     },
-    "Seeing..." : {
+    "Seeing" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "观察中…"
+            "value" : "观察中"
           }
         }
       }
@@ -96,12 +81,13 @@
     "Settings" : {
 
     },
-    "Speaking…" : {
+    "Speaking" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "播报中…"
+            "value" : "播报中"
           }
         }
       }
@@ -115,31 +101,22 @@
     "Speech Rate" : {
 
     },
-    "Stop Speaking" : {
+    "Thinking" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "停止播报"
-          }
-        }
-      }
-    },
-    "Thinking…" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "思考中…"
+            "value" : "思考中"
           }
         }
       }
     },
     "TTFT %@" : {
-
+      "shouldTranslate" : false
     },
     "YAME" : {
-
+      "shouldTranslate" : false
     }
   },
   "version" : "1.0"

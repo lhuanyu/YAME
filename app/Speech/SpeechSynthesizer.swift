@@ -25,6 +25,8 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
     private override init() {
         super.init()
         synthesizer.delegate = self
+        // 初始化时加载当前配置
+        currentConfig = Config()
     }
 
     struct Config {
@@ -32,6 +34,13 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
         var volume: Float = 1.0
         var pitchMultiplier: Float = 1.0
         var language: String = Locale.current.identifier
+
+        init() {
+            // 从UserDefaults读取设置的默认值
+            if let savedRate = UserDefaults.standard.object(forKey: "speechRate") as? Double {
+                rate = Float(savedRate)
+            }
+        }
     }
 
     let voice = AVSpeechSynthesisVoice(language: Locale.current.identifier)

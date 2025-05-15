@@ -5,6 +5,7 @@
 //  Created by LuoHuanyu on 2025/5/15.
 //
 
+#if os(iOS)
 import UIKit
 import Metal
 import CoreML
@@ -69,3 +70,4 @@ struct DeviceCapability {
         return Double(freeMemory) / (1024.0 * 1024.0 * 1024.0)
     }
 }
+#endif
