@@ -8,7 +8,7 @@ set -e
 echo "==================== Starting Post-Clone Script ===================="
 
 # Get the absolute path of the script directory
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "Script directory: $SCRIPT_DIR"
 
 # Set up model directory
@@ -20,7 +20,8 @@ mkdir -p "$MODEL_DIR"
 
 # Call the download script to get the 0.5b model
 echo "Starting download of 0.5b pretrained model..."
-bash "$SCRIPT_DIR/app/get_pretrained_mlx_model.sh" --model 0.5b --dest "$MODEL_DIR"
+# Fix path to point to the correct location of the get_pretrained_mlx_model.sh script
+bash "$SCRIPT_DIR/../get_pretrained_mlx_model.sh" --model 0.5b --dest "$MODEL_DIR"
 
 echo "Model download complete, checking model files..."
 ls -la "$MODEL_DIR"
