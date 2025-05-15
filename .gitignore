@@ -135,7 +135,6 @@ dmypy.json
 .idea/
 
 # Xcode
-*.xcworkspace
 
 # FastVLM models
 app/FastVLM/model
