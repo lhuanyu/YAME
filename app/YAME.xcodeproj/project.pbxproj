@@ -137,6 +137,11 @@
 			path = Speech;
 			sourceTree = "<group>";
 		};
+		E4C409FB2DD64C73008999A2 /* ci_scripts */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ci_scripts;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,6 +186,7 @@
 			children = (
 				12FFAF3E2DC93583009C4EFA /* README.md */,
 				12FFAF3D2DC93583009C4EFA /* get_pretrained_mlx_model.sh */,
+				E4C409FB2DD64C73008999A2 /* ci_scripts */,
 				C32B4A802DA4805400EF663D /* Configuration */,
 				E457BFDD2DD4431300AEE5A4 /* Speech */,
 				C35372AF2D08C32D00474D34 /* Video */,
@@ -245,6 +251,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				019A3E0B2D78E6A00055F93B /* YAME */,
+				E4C409FB2DD64C73008999A2 /* ci_scripts */,
 			);
 			name = YAME;
 			packageProductDependencies = (
