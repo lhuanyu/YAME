@@ -11,8 +11,9 @@ echo "==================== Starting Post-Clone Script ===================="
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "Script directory: $SCRIPT_DIR"
 
-# Set up model directory
-MODEL_DIR="$SCRIPT_DIR/app/FastVLM/model"
+# Set up model directory - fix the path to point to the correct FastVLM/model location
+# Go up one level from ci_scripts to app directory, then to FastVLM/model
+MODEL_DIR="$(dirname "$SCRIPT_DIR")/FastVLM/model"
 echo "Models will be downloaded to: $MODEL_DIR"
 
 # Ensure model directory exists
