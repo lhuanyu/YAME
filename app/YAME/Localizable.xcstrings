@@ -2,7 +2,14 @@
   "sourceLanguage" : "en",
   "strings" : {
     "About" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关于"
+          }
+        }
+      }
     },
     "Describe Image" : {
       "extractionState" : "manual",
@@ -39,6 +46,17 @@
         }
       }
     },
+    "Loading" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加载中"
+          }
+        }
+      }
+    },
     "Output should be brief, about 15 words or less." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -54,7 +72,14 @@
       "extractionState" : "manual"
     },
     "Restore" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复"
+          }
+        }
+      }
     },
     "Rock Paper Scissors" : {
       "extractionState" : "manual",
@@ -79,7 +104,14 @@
       }
     },
     "Settings" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置"
+          }
+        }
+      }
     },
     "Speaking" : {
       "extractionState" : "manual",
@@ -93,13 +125,34 @@
       }
     },
     "Speech" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语音"
+          }
+        }
+      }
     },
     "Speech Enabled" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语音播报"
+          }
+        }
+      }
     },
     "Speech Rate" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语速"
+          }
+        }
+      }
     },
     "Thinking" : {
       "extractionState" : "manual",
