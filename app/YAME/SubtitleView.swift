@@ -31,7 +31,13 @@ struct SubtitleView: View {
                 .multilineTextAlignment(.leading)
                 .lineLimit(nil)
                 .animation(.easeInOut(duration: 0.25), value: text)
-                .padding(.bottom, 30)
+                .padding(.bottom)
+                .padding(.horizontal)
         }
     }
+}
+
+
+#Preview {
+    SubtitleView(text: .constant("Hello, World!"))
 }

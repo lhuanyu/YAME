@@ -9,12 +9,10 @@ import AVFoundation
 import SwiftUI
 
 struct SettingsView: View {
-    // 使用AppStorage持久化设置
-    @AppStorage("speechEnabled") private var speechEnabled = true
-    @AppStorage("speechRate") private var speechRate: Double = Double(
-        AVSpeechUtteranceDefaultSpeechRate)
-
-    // 语速最小值、最大值和默认值常量
+    
+    @ObservedObject private var settingsManager = SettingsManager.shared
+    
+    
     private let minRate: Double = 0.1
     private let maxRate: Double = 1.0
     private let defaultRate: Double = Double(AVSpeechUtteranceDefaultSpeechRate)
@@ -23,14 +21,14 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section(header: Text("Speech")) {
-                    Toggle("Speech Enabled", isOn: $speechEnabled)
-                        .onChange(of: speechEnabled) { _, newValue in
+                    Toggle("Speech Enabled", isOn: $settingsManager.speechEnabled)
+                        .onChange(of: settingsManager.speechEnabled) { _, newValue in
                             if !newValue && SpeechSynthesizer.isSpeaking {
                                 SpeechSynthesizer.shared.stop()
                             }
                         }
 
-                    if speechEnabled {
+                    if settingsManager.speechEnabled {
                         VStack {
                             HStack {
                                 Text("Speech Rate")
@@ -39,19 +37,19 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
 
-                            Slider(value: $speechRate, in: minRate...maxRate) {
+                            Slider(value: $settingsManager.speechRate, in: minRate...maxRate) {
                                 Text("Speech Rate")
                             } minimumValueLabel: {
                                 Image(systemName: "tortoise")
                             } maximumValueLabel: {
                                 Image(systemName: "hare")
                             }
-                            .onChange(of: speechRate) { _, newRate in
+                            .onChange(of: settingsManager.speechRate) { _, newRate in
                                 updateSpeechConfig()
                             }
 
                             Button("Restore") {
-                                speechRate = defaultRate
+                                settingsManager.speechRate = defaultRate
                                 updateSpeechConfig()
                             }
                             .font(.caption)
@@ -87,15 +85,14 @@ struct SettingsView: View {
         return "\(version) (\(build))"
     }
 
-    // 格式化语速描述
-    private var speechRateDescription: String {
-        if speechRate < defaultRate - 0.2 {
+    private var speechRateDescription: LocalizedStringKey {
+        if settingsManager.speechRate < defaultRate - 0.2 {
             return "Very Slow"
-        } else if speechRate < defaultRate - 0.1 {
+        } else if settingsManager.speechRate < defaultRate - 0.1 {
             return "Slow"
-        } else if speechRate > defaultRate + 0.2 {
+        } else if settingsManager.speechRate > defaultRate + 0.2 {
             return "Very Fast"
-        } else if speechRate > defaultRate + 0.1 {
+        } else if settingsManager.speechRate > defaultRate + 0.1 {
             return "Fast"
         } else {
             return "Normal"
@@ -105,7 +102,7 @@ struct SettingsView: View {
     // 更新语音配置
     private func updateSpeechConfig() {
         var config = SpeechSynthesizer.Config()
-        config.rate = Float(speechRate)
+        config.rate = Float(settingsManager.speechRate)
         SpeechSynthesizer.shared.updateConfig(config)
     }
 }

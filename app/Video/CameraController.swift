@@ -26,7 +26,7 @@ public class CameraController: NSObject {
 
     public var devices = [AVCaptureDevice]()
 
-    public var device: AVCaptureDevice = AVCaptureDevice.default(for: .video)! {
+    public var device: AVCaptureDevice? = AVCaptureDevice.default(for: .video) {
         didSet {
             stop()
             start()
@@ -166,7 +166,7 @@ public class CameraController: NSObject {
             position: position)
 
         let videoDevice: AVCaptureDevice?
-        if videoDeviceDiscoverySession.devices.contains(self.device) {
+        if let device, videoDeviceDiscoverySession.devices.contains(device) {
             videoDevice = self.device
         } else {
             videoDevice = videoDeviceDiscoverySession.devices.first

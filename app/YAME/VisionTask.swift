@@ -91,6 +91,61 @@ extension VisionTask {
 
 }
 
+enum VisionTaskState: String, CaseIterable {
+    case loading
+    case idle
+    case seeing
+    case thinking
+    case speaking
+    case paused
+
+    var foregroundColor: Color {
+        switch self {
+        case .loading, .idle, .seeing, .paused:
+            return .white
+        case .thinking:
+            return Color.white
+        case .speaking:
+            return Color.white
+        }
+    }
+
+    var backgroundColor: Color {
+        switch self {
+        case .loading:
+            return .secondary.opacity(0.5)
+        case .idle:
+            return .secondary.opacity(0.5)
+        case .seeing:
+            return Color.blue.opacity(0.7)
+        case .thinking:
+            return Color.orange.opacity(0.7)
+        case .speaking:
+            return Color.green.opacity(0.7)
+        case .paused:
+            return Color.gray.opacity(0.5)
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .loading:
+            return ""
+        case .idle:
+            return "clock.fill"
+        case .seeing:
+            return "eye.fill"
+        case .thinking:
+            return "brain.fill"
+        case .speaking:
+            return "waveform.circle.fill"
+        case .paused:
+            return "pause.fill"
+        }
+    }
+}
+
+
 extension String {
 
     public func localized() -> String {

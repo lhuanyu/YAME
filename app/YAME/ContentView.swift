@@ -17,60 +17,6 @@ extension CMSampleBuffer: @unchecked @retroactive Sendable {}
 // delay between frames -- controls the frame rate of the updates
 let FRAME_DELAY = Duration.milliseconds(1)
 
-enum VisionTaskState: String, CaseIterable {
-    case loading
-    case idle
-    case seeing
-    case thinking
-    case speaking
-    case paused
-
-    var foregroundColor: Color {
-        switch self {
-        case .loading, .idle, .seeing, .paused:
-            return .white
-        case .thinking:
-            return Color.white
-        case .speaking:
-            return Color.white
-        }
-    }
-
-    var backgroundColor: Color {
-        switch self {
-        case .loading:
-            return .secondary.opacity(0.5)
-        case .idle:
-            return .secondary.opacity(0.5)
-        case .seeing:
-            return Color.blue.opacity(0.7)
-        case .thinking:
-            return Color.orange.opacity(0.7)
-        case .speaking:
-            return Color.green.opacity(0.7)
-        case .paused:
-            return Color.gray.opacity(0.5)
-        }
-    }
-
-    var symbolName: String {
-        switch self {
-        case .loading:
-            return ""
-        case .idle:
-            return "clock.fill"
-        case .seeing:
-            return "eye.fill"
-        case .thinking:
-            return "brain.fill"
-        case .speaking:
-            return "waveform.circle.fill"
-        case .paused:
-            return "pause.fill"
-        }
-    }
-}
-
 struct ContentView: View {
     @State private var camera = CameraController()
     @State private var model = FastVLMModel()
@@ -122,10 +68,10 @@ struct ContentView: View {
                         }
                     )
                     #if os(iOS)
-                        .aspectRatio(3 / 4, contentMode: .fit)
+                    .aspectRatio(3 / 4, contentMode: .fit)
                     #else
-                        .aspectRatio(4 / 3, contentMode: .fit)
-                        .frame(maxWidth: 750)
+                    .aspectRatio(4 / 3, contentMode: .fit)
+                    .frame(maxWidth: 750)
                     #endif
                     .overlay(alignment: .topLeading) {
                         #if DEBUG
@@ -152,9 +98,9 @@ struct ContentView: View {
                     }
 
                     #if os(macOS)
-                        .frame(maxWidth: .infinity)
-                        .frame(minWidth: 500)
-                        .frame(minHeight: 375)
+                    .frame(maxWidth: .infinity)
+                    .frame(minWidth: 500)
+                    .frame(minHeight: 375)
                     #endif
                 }
 
@@ -164,33 +110,37 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .task {
-                await camera.startAsync()
-                try? await Task.sleep(for: .milliseconds(100))
-                await model.load()
-                camera.setSampleBufferDelegate()
+                #if targetEnvironment(simulator)
+
+                #else
+                    await camera.startAsync()
+                    try? await Task.sleep(for: .milliseconds(100))
+                    await model.load()
+                    camera.setSampleBufferDelegate()
+                #endif
             }
             #if !os(macOS)
-                .onAppear {
-                    // Prevent the screen from dimming or sleeping due to inactivity
-                    UIApplication.shared.isIdleTimerDisabled = true
-                    NotificationCenter.default.addObserver(
-                        forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
-                    ) { _ in
-                        withAnimation {
-                            isSpeaking = SpeechSynthesizer.isSpeaking
-                            updateTaskState()
-                        }
+            .onAppear {
+                // Prevent the screen from dimming or sleeping due to inactivity
+                UIApplication.shared.isIdleTimerDisabled = true
+                NotificationCenter.default.addObserver(
+                    forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
+                ) { _ in
+                    withAnimation {
+                        isSpeaking = SpeechSynthesizer.isSpeaking
+                        updateTaskState()
                     }
-                    isSpeaking = SpeechSynthesizer.isSpeaking
                 }
-                .background(.black)
-                .onDisappear {
-                    // Resumes normal idle timer behavior
-                    UIApplication.shared.isIdleTimerDisabled = false
-                    NotificationCenter.default.removeObserver(
-                        self, name: .speechSynthesizerSpeakingChanged, object: nil
-                    )
-                }
+                isSpeaking = SpeechSynthesizer.isSpeaking
+            }
+            .background(.black)
+            .onDisappear {
+                // Resumes normal idle timer behavior
+                UIApplication.shared.isIdleTimerDisabled = false
+                NotificationCenter.default.removeObserver(
+                    self, name: .speechSynthesizerSpeakingChanged, object: nil
+                )
+            }
             #endif
 
             // task to distribute video frames -- this will cancel
