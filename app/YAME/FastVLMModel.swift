@@ -188,8 +188,11 @@ class FastVLMModel {
         currentTask?.cancel()
         currentTask = nil
         running = false
+        SpeechSynthesizer.shared.stop()
+    }
+    
+    public func clear() {
         output = ""
         promptTime = ""
-        SpeechSynthesizer.shared.stop()
     }
 }

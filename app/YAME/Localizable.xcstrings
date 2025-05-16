@@ -48,7 +48,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "用中文描述图片。"
+            "value" : "仅用中文描述图片。"
           }
         }
       }
@@ -59,7 +59,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "描述文字应该简短，不超过30个字。"
+            "value" : "文字应该简短，不多于30个字。"
           }
         }
       }

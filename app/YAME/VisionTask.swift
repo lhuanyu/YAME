@@ -75,7 +75,6 @@ extension VisionTask {
         identifyTrafficSignal,
         recognizeText,
         facialExpression,
-        rockPaperScissors,
     ]
 
 }

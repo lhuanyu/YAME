@@ -178,12 +178,9 @@ struct ContentView: View {
                             camera.isTorchEnabled = isTorchEnabled
                             hapticFeedback()
                         } label: {
-                            ZStack {
-
-                                Image(systemName: isTorchEnabled ? "bolt.circle" : "bolt.slash.circle")
-                                    .font(.system(size: 16))
-                                    .foregroundStyle(.white)
-                            }
+                            Image(systemName: isTorchEnabled ? "bolt.circle" : "bolt.slash.circle")
+                                .font(.system(size: 16))
+                                .foregroundStyle(.white)
                         }
 
                         // Speech toggle
@@ -191,14 +188,12 @@ struct ContentView: View {
                             speechEnabled.toggle()
                             hapticFeedback()
                         } label: {
-                            ZStack {
-                                Image(
-                                    systemName: speechEnabled
-                                        ? "speaker.circle" : "speaker.slash.circle"
-                                )
-                                .font(.system(size: 16))
-                                .foregroundStyle(.white)
-                            }
+                            Image(
+                                systemName: speechEnabled
+                                    ? "speaker.circle" : "speaker.slash.circle"
+                            )
+                            .font(.system(size: 16))
+                            .foregroundStyle(.white)
                         }
                     }
 
@@ -208,17 +203,9 @@ struct ContentView: View {
                     Button {
                         isShowingSettings.toggle()
                     } label: {
-                        ZStack {
-                            Circle()
-                                .fill(.ultraThinMaterial.opacity(0.4))
-                                .frame(width: 36, height: 36)
-                                .environment(\.colorScheme, .dark)
-                            
-                            Image(systemName: "gearshape.fill")
-                                .font(.system(size: 16))
-                                .foregroundStyle(.white)
-
-                        }
+                        Image(systemName: "gear.circle")
+                            .font(.system(size: 16))
+                            .foregroundStyle(.white)
                     }
                 }
             }
@@ -327,8 +314,11 @@ struct ContentView: View {
             Button(action: {
                 if camera.isRunning {
                     model.cancel()
+                } else {
+                    model.clear()
                 }
                 camera.isRunning.toggle()
+                updateTaskState()
                 hapticFeedback()
             }) {
                 ZStack {
@@ -390,7 +380,7 @@ struct ContentView: View {
             let t = await model.generate(userInput)
             _ = await t.result
             // Wait for speech to finish
-            if SpeechSynthesizer.shared.isEnabled {
+            if camera.isRunning && SpeechSynthesizer.shared.isEnabled {
                 await SpeechSynthesizer.shared.speakAndWait(model.output)
             }
             do {
