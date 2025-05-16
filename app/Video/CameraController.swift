@@ -14,7 +14,7 @@ import SwiftUI
 #endif
 
 @Observable
-public class CameraController: NSObject {
+public class CameraController: NSObject, @unchecked Sendable {
 
     private var framesContinuation: AsyncStream<CMSampleBuffer>.Continuation?
 
