@@ -39,28 +39,6 @@ public struct VideoFrameView: View {
         VStack {
             if let videoFrame {
                 _ImageView(image: videoFrame)
-                    .overlay(alignment: .bottom) {
-                        if cameraType == .single {
-                            Button {
-                                tap()
-                            } label: {
-                                if hold {
-                                    Label("Resume", systemImage: "play.fill")
-                                } else {
-                                    Label("Capture Photo", systemImage: "camera.fill")
-                                }
-                            }
-                            .clipShape(.capsule)
-                            .buttonStyle(.borderedProminent)
-                            .tint(hold ? .gray : .accentColor)
-                            .foregroundColor(.white)
-                            .padding()
-                        }
-                    }
-            } else {
-                // spinner before the camera comes up
-                ProgressView()
-                    .controlSize(.large)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

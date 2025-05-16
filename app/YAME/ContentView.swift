@@ -97,6 +97,7 @@ struct ContentView: View {
                     }
                     .overlay(alignment: .top) {
                         stateView
+                            .offset(y: -40)
                     }
                     .overlay(alignment: .bottom) {
                         if settingsManager.captionEnabled {
@@ -235,21 +236,14 @@ struct ContentView: View {
                 }
             }
         } label: {
-            ZStack {
-                Circle()
-                    .fill(.ultraThinMaterial.opacity(0.4))
-                    .frame(width: 36, height: 36)
-                    .environment(\.colorScheme, .dark)
-
-                if let selectedTaskIcon = selectedTask.symbol {
-                    Image(systemName: selectedTaskIcon)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(.white)
-                } else {
-                    Image(systemName: "ellipsis.circle")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(.white)
-                }
+            if let selectedTaskIcon = selectedTask.symbol {
+                Image(systemName: selectedTaskIcon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(.white)
+            } else {
+                Image(systemName: "ellipsis.circle")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(.white)
             }
         }
     }
@@ -287,7 +281,6 @@ struct ContentView: View {
             #endif
         }
         .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 1)
-        .padding(.top, 10)
     }
 
     var bottomControls: some View {
