@@ -7,6 +7,7 @@
 
 import AVFoundation
 import CoreImage
+import SwiftUI
 
 #if os(iOS)
     import UIKit
@@ -231,7 +232,7 @@ public class CameraController: NSObject {
 
     public func setSampleBufferDelegate() {
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "sampleBufferQueue"))
-        DispatchQueue.main.async {
+        withAnimation {
             self.isRunning = true
         }
     }

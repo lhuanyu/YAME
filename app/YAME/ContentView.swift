@@ -30,13 +30,12 @@ struct ContentView: View {
 
     // Add state variables for flashlight and speech
     @State private var isTorchEnabled: Bool = false
-    @AppStorage("speechEnabled") private var speechEnabled: Bool = true
 
     @State private var selectedCameraType: CameraType = .continuous
     @State private var isSpeaking: Bool = false
 
     @State private var taskState: VisionTaskState = .loading
-    
+
     @ObservedObject var settingsManager = SettingsManager.shared
 
     var toolbarItemPlacement: ToolbarItemPlacement {
@@ -74,10 +73,10 @@ struct ContentView: View {
                         }
                     )
                     #if os(iOS)
-                        .aspectRatio(3 / 4, contentMode: .fit)
+                    .aspectRatio(3 / 4, contentMode: .fit)
                     #else
-                        .aspectRatio(4 / 3, contentMode: .fit)
-                        .frame(maxWidth: 750)
+                    .aspectRatio(16 / 9, contentMode: .fit)
+                    .frame(maxWidth: 750)
                     #endif
                     .overlay(alignment: .topLeading) {
                         #if DEBUG
@@ -106,9 +105,9 @@ struct ContentView: View {
                     }
 
                     #if os(macOS)
-                        .frame(maxWidth: .infinity)
-                        .frame(minWidth: 500)
-                        .frame(minHeight: 375)
+                    .frame(maxWidth: .infinity)
+                    .frame(minWidth: 500)
+                    .frame(minHeight: 375)
                     #endif
                 }
 
@@ -128,27 +127,27 @@ struct ContentView: View {
                 #endif
             }
             #if !os(macOS)
-                .onAppear {
-                    // Prevent the screen from dimming or sleeping due to inactivity
-                    UIApplication.shared.isIdleTimerDisabled = true
-                    NotificationCenter.default.addObserver(
-                        forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
-                    ) { _ in
-                        withAnimation {
-                            isSpeaking = SpeechSynthesizer.isSpeaking
-                            updateTaskState()
-                        }
+            .onAppear {
+                // Prevent the screen from dimming or sleeping due to inactivity
+                UIApplication.shared.isIdleTimerDisabled = true
+                NotificationCenter.default.addObserver(
+                    forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
+                ) { _ in
+                    withAnimation {
+                        isSpeaking = SpeechSynthesizer.isSpeaking
+                        updateTaskState()
                     }
-                    isSpeaking = SpeechSynthesizer.isSpeaking
                 }
-                .background(.black)
-                .onDisappear {
-                    // Resumes normal idle timer behavior
-                    UIApplication.shared.isIdleTimerDisabled = false
-                    NotificationCenter.default.removeObserver(
-                        self, name: .speechSynthesizerSpeakingChanged, object: nil
-                    )
-                }
+                isSpeaking = SpeechSynthesizer.isSpeaking
+            }
+            .background(.black)
+            .onDisappear {
+                // Resumes normal idle timer behavior
+                UIApplication.shared.isIdleTimerDisabled = false
+                NotificationCenter.default.removeObserver(
+                    self, name: .speechSynthesizerSpeakingChanged, object: nil
+                )
+            }
             #endif
 
             // task to distribute video frames -- this will cancel
@@ -162,7 +161,13 @@ struct ContentView: View {
 
                 await distributeVideoFrames()
             }
-            .onChange(of: model.evaluationState) { _, _ in
+            .onChange(of: model.evaluationState) { oldValue, newValue in
+                guard oldValue != newValue else { return }
+                if newValue == .generatingResponse {
+                    AudioServicesPlaySystemSound(1306)
+                } else if newValue == .processingPrompt {
+                    AudioServicesPlaySystemSound(1306)
+                }
                 withAnimation {
                     updateTaskState()
                 }
@@ -185,18 +190,20 @@ struct ContentView: View {
 
                         // Speech toggle
                         Button {
-                            speechEnabled.toggle()
+                            settingsManager.speechEnabled.toggle()
+                            if !settingsManager.speechEnabled {
+                                SpeechSynthesizer.shared.stop()
+                            }
                             hapticFeedback()
                         } label: {
                             Image(
-                                systemName: speechEnabled
+                                systemName: settingsManager.speechEnabled
                                     ? "speaker.circle" : "speaker.slash.circle"
                             )
                             .font(.system(size: 16))
                             .foregroundStyle(.white)
                         }
                     }
-
                 }
 
                 ToolbarItem(placement: .primaryAction) {
@@ -286,7 +293,11 @@ struct ContentView: View {
     var bottomControls: some View {
         HStack(spacing: 0) {
             Button(action: {
-                SpeechSynthesizer.shared.stop()
+                if settingsManager.speechEnabled {
+                    SpeechSynthesizer.shared.stop()
+                } else {
+                    settingsManager.speechEnabled = true
+                }
                 hapticFeedback()
             }) {
                 ZStack {
@@ -295,13 +306,19 @@ struct ContentView: View {
                         .environment(\.colorScheme, .dark)
                         .frame(width: 50, height: 50)
 
-                    if isSpeaking {
-                        Image(systemName: "speaker.wave.3.fill")
-                            .symbolEffect(.bounce)
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(.white)
+                    if settingsManager.speechEnabled {
+                        if isSpeaking {
+                            Image(systemName: "speaker.wave.3.fill")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .symbolEffect(.bounce)
+                        } else {
+                            Image(systemName: "speaker.fill")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundStyle(.white)
+                        }
                     } else {
-                        Image(systemName: "speaker.fill")
+                        Image(systemName: "speaker.slash.fill")
                             .font(.system(size: 20, weight: .semibold))
                             .foregroundStyle(.white)
                     }
@@ -312,28 +329,36 @@ struct ContentView: View {
             Spacer()
 
             Button(action: {
-                if camera.isRunning {
-                    model.cancel()
-                } else {
-                    model.clear()
+                withAnimation {
+                    if camera.isRunning {
+                        model.cancel()
+                        /// play pause sound
+                        AudioServicesPlaySystemSound(1117)
+                    } else {
+                        model.clear()
+                        /// play record sound
+                        AudioServicesPlaySystemSound(1118)
+                    }
+                    camera.isRunning.toggle()
+                    updateTaskState()
+                    hapticFeedback()
                 }
-                camera.isRunning.toggle()
-                updateTaskState()
-                hapticFeedback()
             }) {
                 ZStack {
                     Circle()
-                        .strokeBorder(Color.white.opacity(0.8), lineWidth: 3)
+                        .strokeBorder(Color.white, lineWidth: 3)
                         .frame(width: 80, height: 80)
 
-                    Circle()
+                    // Animated shape that morphs between circle and square
+                    RoundedRectangle(cornerRadius: camera.isRunning ? 5 : 34)
                         .fill(
-                            camera.isRunning
-                                ? Color(.red)
-                                : Color.white.opacity(0.9)
+                            Color(.red)
                         )
-                        .frame(width: 68, height: 68)
+                        .frame(
+                            width: camera.isRunning ? 30 : 68, height: camera.isRunning ? 30 : 68
+                        )
                         .shadow(color: .black.opacity(0.2), radius: 2)
+                        .animation(.easeInOut(duration: 0.3), value: camera.isRunning)
                 }
             }
 
@@ -343,9 +368,14 @@ struct ContentView: View {
                 Button(action: {
                     camera.backCamera.toggle()
                     // Reset torch when switching camera since it only works on back camera
-                    if !camera.backCamera && isTorchEnabled {
+                    if !camera.backCamera, isTorchEnabled {
                         isTorchEnabled = false
                         camera.isTorchEnabled = false
+                    }
+                    if !camera.isRunning {
+                        model.clear()
+                        camera.isRunning = true
+                        AudioServicesPlaySystemSound(1118)
                     }
                     hapticFeedback()
                 }) {

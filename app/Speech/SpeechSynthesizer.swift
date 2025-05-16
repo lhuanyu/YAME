@@ -12,8 +12,7 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
     static let shared = SpeechSynthesizer()
 
     var isEnabled: Bool {
-        // Get AppStorage value for speech enabled status
-        UserDefaults.standard.bool(forKey: "speechEnabled")
+        SettingsManager.shared.speechEnabled
     }
 
     static private(set) var isSpeaking: Bool = false {
@@ -43,7 +42,7 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
         }
     }
 
-    let voice = AVSpeechSynthesisVoice(language: Locale.current.identifier)
+    private let voice = AVSpeechSynthesisVoice(language: Locale.current.identifier)
 
     private var currentConfig = Config()
     private var speechFinishedContinuation: CheckedContinuation<Void, Never>?

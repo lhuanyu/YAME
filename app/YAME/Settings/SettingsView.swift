@@ -5,19 +5,17 @@
 //  Created by LuoHuanyu on 2025/5/14.
 //
 
+import AcknowList
 import AVFoundation
 import SwiftUI
-import AcknowList
 
 struct SettingsView: View {
-    
     @ObservedObject private var settingsManager = SettingsManager.shared
-    
-    
+
     private let minRate: Double = 0.1
     private let maxRate: Double = 1.0
-    private let defaultRate: Double = Double(AVSpeechUtteranceDefaultSpeechRate)
-    
+    private let defaultRate: Double = .init(AVSpeechUtteranceDefaultSpeechRate)
+
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -40,14 +38,14 @@ struct SettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
 
-                            Slider(value: $settingsManager.speechRate, in: minRate...maxRate) {
+                            Slider(value: $settingsManager.speechRate, in: minRate ... maxRate) {
                                 Text("Speech Rate")
                             } minimumValueLabel: {
                                 Image(systemName: "tortoise")
                             } maximumValueLabel: {
                                 Image(systemName: "hare")
                             }
-                            .onChange(of: settingsManager.speechRate) { _, newRate in
+                            .onChange(of: settingsManager.speechRate) { _, _ in
                                 updateSpeechConfig()
                             }
 
@@ -60,7 +58,7 @@ struct SettingsView: View {
                         }
                     }
                 }
-                
+
                 Section {
                     Toggle("Caption", isOn: $settingsManager.captionEnabled)
                 }
@@ -78,7 +76,11 @@ struct SettingsView: View {
                     /// Feedback
                     Button {
                         if let url = URL(string: "mailto:lhuany@gmail.com?subject=Feedback for YAME") {
+                            #if os(iOS)
                             UIApplication.shared.open(url)
+                            #elseif os(macOS)
+                            NSWorkspace.shared.open(url)
+                            #endif
                         }
                     } label: {
                         HStack {
@@ -90,7 +92,11 @@ struct SettingsView: View {
                     /// AppStore Rating
                     Button {
                         if let url = URL(string: "https://apps.apple.com/app/id6742433200?action=write-review") {
+                            #if os(iOS)
                             UIApplication.shared.open(url)
+                            #elseif os(macOS)
+                            NSWorkspace.shared.open(url)
+                            #endif
                         }
                     } label: {
                         HStack {
@@ -112,22 +118,22 @@ struct SettingsView: View {
             #if os(iOS)
                 .navigationBarTitleDisplayMode(.inline)
             #endif
-            .onAppear {
-                updateSpeechConfig()
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                    }
-                    .foregroundStyle(.secondary)
+                .onAppear {
+                    updateSpeechConfig()
                 }
-            }
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                        }
+                        .foregroundStyle(.secondary)
+                    }
+                }
         }
     }
-    
+
     var appVersionAndBuild: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"

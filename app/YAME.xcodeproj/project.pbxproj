@@ -72,6 +72,9 @@
 			membershipExceptions = (
 				Info.plist,
 			);
+			platformFiltersByRelativePath = {
+				"Launch Screen.storyboard" = (ios, );
+			};
 			target = 019A3E092D78E6A00055F93B /* YAME */;
 		};
 		C35372B92D08C32D00474D34 /* Exceptions for "Video" folder in "Video" target */ = {

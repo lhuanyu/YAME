@@ -12,7 +12,9 @@ struct YAMEApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+            #if os(iOS)
                 .statusBar(hidden: true)
+            #endif
         }
     }
 }
