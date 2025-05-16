@@ -15,6 +15,8 @@ class SettingsManager: ObservableObject {
     @AppStorage("speechRate") var speechRate: Double = Double(
         AVSpeechUtteranceDefaultSpeechRate)
     
+    @AppStorage("captionEnabled") var captionEnabled = true
+    
     static let shared = SettingsManager()
     
 }

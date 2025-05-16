@@ -59,6 +59,10 @@ struct SettingsView: View {
                         }
                     }
                 }
+                
+                Section {
+                    Toggle("Caption", isOn: $settingsManager.captionEnabled)
+                }
 
                 Section(header: Text("About")) {
                     /// AcknowList

@@ -21,6 +21,16 @@
         }
       }
     },
+    "Caption" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回复字幕"
+          }
+        }
+      }
+    },
     "Describe Image" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -36,6 +36,8 @@ struct ContentView: View {
     @State private var isSpeaking: Bool = false
 
     @State private var taskState: VisionTaskState = .loading
+    
+    @ObservedObject var settingsManager = SettingsManager.shared
 
     var toolbarItemPlacement: ToolbarItemPlacement {
         var placement: ToolbarItemPlacement = .navigation
@@ -98,7 +100,9 @@ struct ContentView: View {
                         stateView
                     }
                     .overlay(alignment: .bottom) {
-                        SubtitleView(text: $model.output)
+                        if settingsManager.captionEnabled {
+                            SubtitleView(text: $model.output)
+                        }
                     }
 
                     #if os(macOS)
