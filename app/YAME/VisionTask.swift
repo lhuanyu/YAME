@@ -43,21 +43,11 @@ extension VisionTask {
         provider: .system
     )
 
-    ///Count fingers
-    static let countFingers = VisionTask(
-        name: "Count Fingers".localized(),
-        prompt: "How many fingers am I holding up?".localized(),
-        promptSuffix: "Respond with a single number. If no hands are detected, respond with 0."
-            .localized(),
-        symbol: "hand.raised.fingers.spread",
-        provider: .system
-    )
-
     ///Recognize text
     static let recognizeText = VisionTask(
         name: "Recognize Text".localized(),
         prompt: "Recognize the text in the image.".localized(),
-        promptSuffix: "Output should be the recognized text.".localized(),
+        promptSuffix: "Output only the text in the image..".localized(),
         symbol: "doc.plaintext",
         provider: .system
     )
@@ -73,7 +63,7 @@ extension VisionTask {
 
     ///Facial expression
     static let facialExpression = VisionTask(
-        name: "Facial Expression".localized(),
+        name: "Identify Facial Expression".localized(),
         prompt: "Identify the facial expression in the image.".localized(),
         promptSuffix: "Output should be short and concise.".localized(),
         symbol: "face.smiling".localized(),
@@ -82,11 +72,10 @@ extension VisionTask {
 
     static let allTasks: [VisionTask] = [
         describeImage,
-        rockPaperScissors,
-        countFingers,
-        recognizeText,
         identifyTrafficSignal,
+        recognizeText,
         facialExpression,
+        rockPaperScissors,
     ]
 
 }

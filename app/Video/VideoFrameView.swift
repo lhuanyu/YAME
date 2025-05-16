@@ -66,6 +66,10 @@ public struct VideoFrameView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(backgroundColor)
         .clipShape(Rectangle())
+        .overlay {
+            // Add corner borders to the VideoFrameView
+            CornerBorder(color: .white, lineWidth: 1, cornerLength: 20)
+        }
         .task {
             // feed frames to the _ImageView
             if Task.isCancelled {
@@ -96,6 +100,85 @@ public struct VideoFrameView: View {
                 action(videoFrame)
             }
         }
+    }
+}
+
+/// A view that draws border lines at the four corners of its container
+private struct CornerBorder: View {
+    let color: Color
+    let lineWidth: CGFloat
+    let cornerLength: CGFloat
+
+    // Common stroke style to ensure consistent rendering
+    private var strokeStyle: StrokeStyle {
+        StrokeStyle(
+            lineWidth: lineWidth,
+            lineCap: .square,
+            lineJoin: .miter
+        )
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            let width = geometry.size.width
+            let height = geometry.size.height
+
+            // Adjusted positions to account for line width
+            let adjustedLineWidth = lineWidth / 2
+            let x0 = adjustedLineWidth
+            let y0 = adjustedLineWidth
+            let xMax = width - adjustedLineWidth
+            let yMax = height - adjustedLineWidth
+
+            ZStack {
+                // Top Left Corner
+                CornerShape(
+                    start: CGPoint(x: x0, y: cornerLength),
+                    corner: CGPoint(x: x0, y: y0),
+                    end: CGPoint(x: cornerLength, y: y0)
+                )
+                .stroke(color, style: strokeStyle)
+
+                // Top Right Corner
+                CornerShape(
+                    start: CGPoint(x: width - cornerLength, y: y0),
+                    corner: CGPoint(x: xMax, y: y0),
+                    end: CGPoint(x: xMax, y: cornerLength)
+                )
+                .stroke(color, style: strokeStyle)
+
+                // Bottom Left Corner
+                CornerShape(
+                    start: CGPoint(x: x0, y: height - cornerLength),
+                    corner: CGPoint(x: x0, y: yMax),
+                    end: CGPoint(x: cornerLength, y: yMax)
+                )
+                .stroke(color, style: strokeStyle)
+
+                // Bottom Right Corner
+                CornerShape(
+                    start: CGPoint(x: width - cornerLength, y: yMax),
+                    corner: CGPoint(x: xMax, y: yMax),
+                    end: CGPoint(x: xMax, y: height - cornerLength)
+                )
+                .stroke(color, style: strokeStyle)
+            }
+        }
+    }
+}
+
+/// A shape that represents a single corner with two line segments
+private struct CornerShape: Shape {
+    let start: CGPoint
+    let corner: CGPoint
+    let end: CGPoint
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: start)
+        path.addLine(to: corner)
+        path.addLine(to: end)
+        return path
     }
 }
 

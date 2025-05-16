@@ -28,6 +28,10 @@ struct ContentView: View {
 
     @State private var isShowingSettings: Bool = false
 
+    // Add state variables for flashlight and speech
+    @State private var isTorchEnabled: Bool = false
+    @AppStorage("speechEnabled") private var speechEnabled: Bool = true
+
     @State private var selectedCameraType: CameraType = .continuous
     @State private var isSpeaking: Bool = false
 
@@ -68,10 +72,10 @@ struct ContentView: View {
                         }
                     )
                     #if os(iOS)
-                    .aspectRatio(3 / 4, contentMode: .fit)
+                        .aspectRatio(3 / 4, contentMode: .fit)
                     #else
-                    .aspectRatio(4 / 3, contentMode: .fit)
-                    .frame(maxWidth: 750)
+                        .aspectRatio(4 / 3, contentMode: .fit)
+                        .frame(maxWidth: 750)
                     #endif
                     .overlay(alignment: .topLeading) {
                         #if DEBUG
@@ -98,9 +102,9 @@ struct ContentView: View {
                     }
 
                     #if os(macOS)
-                    .frame(maxWidth: .infinity)
-                    .frame(minWidth: 500)
-                    .frame(minHeight: 375)
+                        .frame(maxWidth: .infinity)
+                        .frame(minWidth: 500)
+                        .frame(minHeight: 375)
                     #endif
                 }
 
@@ -120,27 +124,27 @@ struct ContentView: View {
                 #endif
             }
             #if !os(macOS)
-            .onAppear {
-                // Prevent the screen from dimming or sleeping due to inactivity
-                UIApplication.shared.isIdleTimerDisabled = true
-                NotificationCenter.default.addObserver(
-                    forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
-                ) { _ in
-                    withAnimation {
-                        isSpeaking = SpeechSynthesizer.isSpeaking
-                        updateTaskState()
+                .onAppear {
+                    // Prevent the screen from dimming or sleeping due to inactivity
+                    UIApplication.shared.isIdleTimerDisabled = true
+                    NotificationCenter.default.addObserver(
+                        forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
+                    ) { _ in
+                        withAnimation {
+                            isSpeaking = SpeechSynthesizer.isSpeaking
+                            updateTaskState()
+                        }
                     }
+                    isSpeaking = SpeechSynthesizer.isSpeaking
                 }
-                isSpeaking = SpeechSynthesizer.isSpeaking
-            }
-            .background(.black)
-            .onDisappear {
-                // Resumes normal idle timer behavior
-                UIApplication.shared.isIdleTimerDisabled = false
-                NotificationCenter.default.removeObserver(
-                    self, name: .speechSynthesizerSpeakingChanged, object: nil
-                )
-            }
+                .background(.black)
+                .onDisappear {
+                    // Resumes normal idle timer behavior
+                    UIApplication.shared.isIdleTimerDisabled = false
+                    NotificationCenter.default.removeObserver(
+                        self, name: .speechSynthesizerSpeakingChanged, object: nil
+                    )
+                }
             #endif
 
             // task to distribute video frames -- this will cancel
@@ -161,11 +165,42 @@ struct ContentView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("YAME")
-                        .font(.headline.weight(.semibold))
-                        .foregroundStyle(.white)
+                    menu
                 }
                 ToolbarItem(placement: toolbarItemPlacement) {
+                    HStack {
+                        Button {
+                            isTorchEnabled.toggle()
+                            camera.isTorchEnabled = isTorchEnabled
+                            hapticFeedback()
+                        } label: {
+                            ZStack {
+
+                                Image(systemName: isTorchEnabled ? "bolt.circle" : "bolt.slash.circle")
+                                    .font(.system(size: 16))
+                                    .foregroundStyle(.white)
+                            }
+                        }
+
+                        // Speech toggle
+                        Button {
+                            speechEnabled.toggle()
+                            hapticFeedback()
+                        } label: {
+                            ZStack {
+                                Image(
+                                    systemName: speechEnabled
+                                        ? "speaker.circle" : "speaker.slash.circle"
+                                )
+                                .font(.system(size: 16))
+                                .foregroundStyle(.white)
+                            }
+                        }
+                    }
+
+                }
+
+                ToolbarItem(placement: .primaryAction) {
                     Button {
                         isShowingSettings.toggle()
                     } label: {
@@ -174,16 +209,13 @@ struct ContentView: View {
                                 .fill(.ultraThinMaterial.opacity(0.4))
                                 .frame(width: 36, height: 36)
                                 .environment(\.colorScheme, .dark)
-
+                            
                             Image(systemName: "gearshape.fill")
-                                .font(.system(size: 16, weight: .medium))
+                                .font(.system(size: 16))
                                 .foregroundStyle(.white)
+
                         }
                     }
-                }
-
-                ToolbarItem(placement: .primaryAction) {
-                    menu
                 }
             }
             .sheet(isPresented: $isShowingSettings) {
@@ -313,6 +345,11 @@ struct ContentView: View {
             #if os(iOS)
                 Button(action: {
                     camera.backCamera.toggle()
+                    // Reset torch when switching camera since it only works on back camera
+                    if !camera.backCamera && isTorchEnabled {
+                        isTorchEnabled = false
+                        camera.isTorchEnabled = false
+                    }
                     hapticFeedback()
                 }) {
                     ZStack {

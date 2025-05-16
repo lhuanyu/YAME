@@ -24,6 +24,26 @@ public class CameraController: NSObject {
         }
     }
 
+    // Torch (flashlight) control
+    public var isTorchEnabled: Bool = false {
+        didSet {
+            toggleTorch(on: isTorchEnabled)
+        }
+    }
+
+    // Toggle torch (flashlight) on/off
+    private func toggleTorch(on: Bool) {
+        guard let device = self.device, device.hasTorch, device.position == .back else { return }
+
+        do {
+            try device.lockForConfiguration()
+            device.torchMode = on ? .on : .off
+            device.unlockForConfiguration()
+        } catch {
+            print("Failed to toggle torch: \(error)")
+        }
+    }
+
     public var devices = [AVCaptureDevice]()
 
     public var device: AVCaptureDevice? = AVCaptureDevice.default(for: .video) {
@@ -142,7 +162,7 @@ public class CameraController: NSObject {
             self.permissionGranted = granted
         }
     }
-    
+
     let videoOutput = AVCaptureVideoDataOutput()
 
     func setupCaptureSession(position: AVCaptureDevice.Position) {
@@ -208,16 +228,16 @@ public class CameraController: NSObject {
             }
         #endif
     }
-    
+
     public func setSampleBufferDelegate() {
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "sampleBufferQueue"))
         DispatchQueue.main.async {
             self.isRunning = true
         }
     }
-    
+
     public var isRunning: Bool = false
-        
+
 }
 
 extension CameraController: AVCaptureVideoDataOutputSampleBufferDelegate {

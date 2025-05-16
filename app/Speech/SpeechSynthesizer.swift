@@ -12,7 +12,7 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
     static let shared = SpeechSynthesizer()
 
     var isEnabled: Bool {
-        ///Get AppStorage value
+        // Get AppStorage value for speech enabled status
         UserDefaults.standard.bool(forKey: "speechEnabled")
     }
 

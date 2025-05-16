@@ -16,6 +16,8 @@ struct SettingsView: View {
     private let minRate: Double = 0.1
     private let maxRate: Double = 1.0
     private let defaultRate: Double = Double(AVSpeechUtteranceDefaultSpeechRate)
+    
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
@@ -59,6 +61,39 @@ struct SettingsView: View {
                 }
 
                 Section(header: Text("About")) {
+                    /// AcknowList
+                    NavigationLink {
+//                        AcknowListSwiftUIView()
+                    } label: {
+                        HStack {
+                            Image(systemName: "heart.fill")
+                            Text("Acknowledgements")
+                        }
+                    }
+                    /// Feedback
+                    Button {
+                        if let url = URL(string: "mailto:lhuany@gmail.com?subject=Feedback for YAME") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "envelope.fill")
+                            Text("Feedback")
+                        }
+                    }
+                    .foregroundColor(.primary)
+                    /// AppStore Rating
+                    Button {
+                        if let url = URL(string: "https://apps.apple.com/app/id6742433200?action=write-review") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "star.fill")
+                            Text("Rate on AppStore")
+                        }
+                    }
+                    .foregroundColor(.primary)
                     VStack(alignment: .leading) {
                         Text("YAME")
                             .font(.headline)
@@ -73,8 +108,17 @@ struct SettingsView: View {
                 .navigationBarTitleDisplayMode(.inline)
             #endif
             .onAppear {
-                // 加载时应用设置到语音合成器
                 updateSpeechConfig()
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                    .foregroundStyle(.secondary)
+                }
             }
         }
     }
