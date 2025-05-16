@@ -1,6 +1,15 @@
 {
-  "originHash" : "9281d463c494546411c01d4b96bf3888492de2f125f869b878624d13673b89eb",
+  "originHash" : "95a16de28da42837fee3053fa77f81f842620e30f241e4bc133c69fd745ed23a",
   "pins" : [
+    {
+      "identity" : "acknowlist",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vtourraine/AcknowList",
+      "state" : {
+        "revision" : "d975b9a4ff2e1364b7ece2384c1add739d21219e",
+        "version" : "3.3.0"
+      }
+    },
     {
       "identity" : "gzipswift",
       "kind" : "remoteSourceControl",

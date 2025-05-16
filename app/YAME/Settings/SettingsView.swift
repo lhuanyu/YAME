@@ -7,6 +7,7 @@
 
 import AVFoundation
 import SwiftUI
+import AcknowList
 
 struct SettingsView: View {
     
@@ -67,7 +68,7 @@ struct SettingsView: View {
                 Section(header: Text("About")) {
                     /// AcknowList
                     NavigationLink {
-//                        AcknowListSwiftUIView()
+                        AcknowListSwiftUIView()
                     } label: {
                         HStack {
                             Image(systemName: "heart.fill")
