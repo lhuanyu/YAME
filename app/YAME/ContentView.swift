@@ -73,11 +73,13 @@ struct ContentView: View {
                         }
                     )
                     #if os(iOS)
-                    .aspectRatio(3 / 4, contentMode: .fit)
+                        .aspectRatio(3 / 4, contentMode: .fit)
                     #else
-                    .aspectRatio(16 / 9, contentMode: .fit)
-                    .frame(maxWidth: 750)
+                        .aspectRatio(16 / 9, contentMode: .fit)
+                        .frame(maxWidth: 750)
                     #endif
+                    .accessibilityLabel("Video preview")
+                    .accessibilityHint("Double tap to analyze the current frame.")
                     .overlay(alignment: .topLeading) {
                         #if DEBUG
                             if !model.promptTime.isEmpty {
@@ -92,23 +94,29 @@ struct ContentView: View {
                                             .fill(Color.black.opacity(0.6))
                                     }
                                     .padding([.top, .leading], 8)
+                                    .accessibilityHidden(true)
                             }
                         #endif
                     }
                     .overlay(alignment: .top) {
                         stateView
                             .offset(y: -40)
+                            .accessibilityElement()
+                            .accessibilityLabel("Status")
+                            .accessibilityValue(taskState.rawValue.capitalized.localized())
                     }
                     .overlay(alignment: .bottom) {
                         if settingsManager.captionEnabled {
                             SubtitleView(text: $model.output)
+                                .accessibilityLabel("Subtitle")
+                                .accessibilityValue(model.output)
                         }
                     }
 
                     #if os(macOS)
-                    .frame(maxWidth: .infinity)
-                    .frame(minWidth: 500)
-                    .frame(minHeight: 375)
+                        .frame(maxWidth: .infinity)
+                        .frame(minWidth: 500)
+                        .frame(minHeight: 375)
                     #endif
                 }
 
@@ -128,27 +136,27 @@ struct ContentView: View {
                 #endif
             }
             #if !os(macOS)
-            .onAppear {
-                // Prevent the screen from dimming or sleeping due to inactivity
-                UIApplication.shared.isIdleTimerDisabled = true
-                NotificationCenter.default.addObserver(
-                    forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
-                ) { _ in
-                    withAnimation {
-                        isSpeaking = SpeechSynthesizer.isSpeaking
-                        updateTaskState()
+                .onAppear {
+                    // Prevent the screen from dimming or sleeping due to inactivity
+                    UIApplication.shared.isIdleTimerDisabled = true
+                    NotificationCenter.default.addObserver(
+                        forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
+                    ) { _ in
+                        withAnimation {
+                            isSpeaking = SpeechSynthesizer.isSpeaking
+                            updateTaskState()
+                        }
                     }
+                    isSpeaking = SpeechSynthesizer.isSpeaking
                 }
-                isSpeaking = SpeechSynthesizer.isSpeaking
-            }
-            .background(.black)
-            .onDisappear {
-                // Resumes normal idle timer behavior
-                UIApplication.shared.isIdleTimerDisabled = false
-                NotificationCenter.default.removeObserver(
-                    self, name: .speechSynthesizerSpeakingChanged, object: nil
-                )
-            }
+                .background(.black)
+                .onDisappear {
+                    // Resumes normal idle timer behavior
+                    UIApplication.shared.isIdleTimerDisabled = false
+                    NotificationCenter.default.removeObserver(
+                        self, name: .speechSynthesizerSpeakingChanged, object: nil
+                    )
+                }
             #endif
 
             // task to distribute video frames -- this will cancel
@@ -188,6 +196,10 @@ struct ContentView: View {
                                 .font(.system(size: 16))
                                 .foregroundStyle(.white)
                         }
+                        .accessibilityLabel(
+                            isTorchEnabled ? "Turn off flashlight" : "Turn on flashlight"
+                        )
+                        .accessibilityHint("Double tap to toggle the flashlight.")
 
                         // Speech toggle
                         Button {
@@ -204,6 +216,10 @@ struct ContentView: View {
                             .font(.system(size: 16))
                             .foregroundStyle(.white)
                         }
+                        .accessibilityLabel(
+                            settingsManager.speechEnabled ? "Disable speech" : "Enable speech"
+                        )
+                        .accessibilityHint("Double tap to toggle speech output.")
                     }
                 }
 
@@ -215,6 +231,8 @@ struct ContentView: View {
                             .font(.system(size: 16))
                             .foregroundStyle(.white)
                     }
+                    .accessibilityLabel("Settings")
+                    .accessibilityHint("Double tap to open settings.")
                 }
             }
             .sheet(isPresented: $isShowingSettings) {
@@ -234,6 +252,7 @@ struct ContentView: View {
                         Text(task.name)
                     }
                 }
+                .accessibilityLabel(task.name)
             }
         } label: {
             if let selectedTaskIcon = selectedTask.symbol {
@@ -246,6 +265,7 @@ struct ContentView: View {
                     .foregroundStyle(.white)
             }
         }
+        .accessibilityLabel("Change vision task type. Current task is \(selectedTask.name)")
     }
 
     var stateView: some View {
@@ -318,6 +338,11 @@ struct ContentView: View {
                 }
             }
             .frame(width: 60, height: 60)
+            .accessibilityLabel(
+                settingsManager.speechEnabled
+                    ? (isSpeaking ? "Speaking" : "Speech enabled") : "Speech disabled"
+            )
+            .accessibilityHint("Double tap to toggle speech output.")
 
             Spacer()
 
@@ -354,6 +379,10 @@ struct ContentView: View {
                         .animation(.easeInOut(duration: 0.3), value: camera.isRunning)
                 }
             }
+            .accessibilityLabel(camera.isRunning ? "Pause camera" : "Start camera")
+            .accessibilityHint(
+                camera.isRunning
+                    ? "Double tap to pause video analysis." : "Double tap to start video analysis.")
 
             Spacer()
 
@@ -384,6 +413,8 @@ struct ContentView: View {
                     }
                 }
                 .frame(width: 60, height: 60)
+                .accessibilityLabel("Switch camera")
+                .accessibilityHint("Double tap to switch between front and back camera.")
             #endif
         }
         .padding(.vertical, 20)

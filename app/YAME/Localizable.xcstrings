@@ -21,12 +21,32 @@
         }
       }
     },
-    "Caption" : {
+    "Adjust speech rate" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "回复字幕"
+            "value" : "调整语速"
+          }
+        }
+      }
+    },
+    "App version" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App版本"
+          }
+        }
+      }
+    },
+    "Change vision task type. Current task is %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "改变视觉任务类型。当前任务 %@。"
           }
         }
       }
@@ -60,6 +80,146 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "文字应该简短，不多于30个字。"
+          }
+        }
+      }
+    },
+    "Disable speech" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭语音播报"
+          }
+        }
+      }
+    },
+    "Double tap to analyze the current frame." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击分析当前画面。"
+          }
+        }
+      }
+    },
+    "Double tap to open settings." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击打开设置。"
+          }
+        }
+      }
+    },
+    "Double tap to pause video analysis." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击暂停视频分析。"
+          }
+        }
+      }
+    },
+    "Double tap to rate this app on the App Store." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击为App评分"
+          }
+        }
+      }
+    },
+    "Double tap to reset speech rate to default." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击重设语速"
+          }
+        }
+      }
+    },
+    "Double tap to send feedback via email." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击发送反馈邮件"
+          }
+        }
+      }
+    },
+    "Double tap to start video analysis." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击开始视频分析。"
+          }
+        }
+      }
+    },
+    "Double tap to switch between front and back camera." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击切换前后摄像头。"
+          }
+        }
+      }
+    },
+    "Double tap to toggle speech output." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击切换语音播报。"
+          }
+        }
+      }
+    },
+    "Double tap to toggle subtitle display." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击切换字幕显示。"
+          }
+        }
+      }
+    },
+    "Double tap to toggle the flashlight." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击切换手电筒开关。"
+          }
+        }
+      }
+    },
+    "Double tap to view open source acknowledgements." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击查看开源软件列表。"
+          }
+        }
+      }
+    },
+    "Enable speech" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启语音播报"
           }
         }
       }
@@ -205,6 +365,16 @@
         }
       }
     },
+    "Pause camera" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂停摄像头"
+          }
+        }
+      }
+    },
     "Paused" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -254,6 +424,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "恢复"
+          }
+        }
+      }
+    },
+    "Restore default speech rate" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复默认语速"
           }
         }
       }
@@ -322,6 +502,26 @@
         }
       }
     },
+    "Speech disabled" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语音播报关闭"
+          }
+        }
+      }
+    },
+    "Speech enabled" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语音播报开启"
+          }
+        }
+      }
+    },
     "Speech Enabled" : {
       "localizations" : {
         "zh-Hans" : {
@@ -332,12 +532,72 @@
         }
       }
     },
+    "Speech rate" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语速"
+          }
+        }
+      }
+    },
     "Speech Rate" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "语速"
+          }
+        }
+      }
+    },
+    "Start camera" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启动摄像头"
+          }
+        }
+      }
+    },
+    "Status" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "状态"
+          }
+        }
+      }
+    },
+    "Subtitle" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕"
+          }
+        }
+      }
+    },
+    "Subtitle enabled" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "字幕开启"
+          }
+        }
+      }
+    },
+    "Switch camera" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换摄像头"
           }
         }
       }
@@ -355,6 +615,26 @@
     },
     "TTFT %@" : {
       "shouldTranslate" : false
+    },
+    "Turn off flashlight" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭手电筒"
+          }
+        }
+      }
+    },
+    "Turn on flashlight" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开手电筒"
+          }
+        }
+      }
     },
     "Very Fast" : {
       "extractionState" : "manual",
@@ -374,6 +654,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "非常慢"
+          }
+        }
+      }
+    },
+    "Video preview" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视频预览"
           }
         }
       }

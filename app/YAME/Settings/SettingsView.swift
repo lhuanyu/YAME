@@ -5,8 +5,8 @@
 //  Created by LuoHuanyu on 2025/5/14.
 //
 
-import AcknowList
 import AVFoundation
+import AcknowList
 import SwiftUI
 
 struct SettingsView: View {
@@ -23,6 +23,8 @@ struct SettingsView: View {
             Form {
                 Section(header: Text("Speech")) {
                     Toggle("Speech Enabled", isOn: $settingsManager.speechEnabled)
+                        .accessibilityLabel("Speech enabled")
+                        .accessibilityHint("Double tap to toggle speech output.")
                         .onChange(of: settingsManager.speechEnabled) { _, newValue in
                             if !newValue && SpeechSynthesizer.isSpeaking {
                                 SpeechSynthesizer.shared.stop()
@@ -37,14 +39,19 @@ struct SettingsView: View {
                                 Text(speechRateDescription)
                                     .foregroundStyle(.secondary)
                             }
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel("Speech rate")
+                            .accessibilityValue(speechRateDescription)
 
-                            Slider(value: $settingsManager.speechRate, in: minRate ... maxRate) {
+                            Slider(value: $settingsManager.speechRate, in: minRate...maxRate) {
                                 Text("Speech Rate")
                             } minimumValueLabel: {
                                 Image(systemName: "tortoise")
                             } maximumValueLabel: {
                                 Image(systemName: "hare")
                             }
+                            .accessibilityLabel("Adjust speech rate")
+                            .accessibilityValue(speechRateDescription)
                             .onChange(of: settingsManager.speechRate) { _, _ in
                                 updateSpeechConfig()
                             }
@@ -55,12 +62,16 @@ struct SettingsView: View {
                             }
                             .font(.caption)
                             .frame(maxWidth: .infinity, alignment: .trailing)
+                            .accessibilityLabel("Restore default speech rate")
+                            .accessibilityHint("Double tap to reset speech rate to default.")
                         }
                     }
                 }
 
                 Section {
-                    Toggle("Caption", isOn: $settingsManager.captionEnabled)
+                    Toggle("Subtitle", isOn: $settingsManager.captionEnabled)
+                        .accessibilityLabel("Subtitle enabled")
+                        .accessibilityHint("Double tap to toggle subtitle display.")
                 }
 
                 Section(header: Text("About")) {
@@ -73,13 +84,17 @@ struct SettingsView: View {
                             Text("Acknowledgements")
                         }
                     }
+                    .accessibilityLabel("Acknowledgements")
+                    .accessibilityHint("Double tap to view open source acknowledgements.")
                     /// Feedback
                     Button {
-                        if let url = URL(string: "mailto:lhuany@gmail.com?subject=Feedback for YAME") {
+                        if let url = URL(
+                            string: "mailto:lhuany@gmail.com?subject=Feedback for YAME")
+                        {
                             #if os(iOS)
-                            UIApplication.shared.open(url)
+                                UIApplication.shared.open(url)
                             #elseif os(macOS)
-                            NSWorkspace.shared.open(url)
+                                NSWorkspace.shared.open(url)
                             #endif
                         }
                     } label: {
@@ -89,13 +104,17 @@ struct SettingsView: View {
                         }
                     }
                     .foregroundColor(.primary)
+                    .accessibilityLabel("Feedback")
+                    .accessibilityHint("Double tap to send feedback via email.")
                     /// AppStore Rating
                     Button {
-                        if let url = URL(string: "https://apps.apple.com/app/id6742433200?action=write-review") {
+                        if let url = URL(
+                            string: "https://apps.apple.com/app/id6742433200?action=write-review")
+                        {
                             #if os(iOS)
-                            UIApplication.shared.open(url)
+                                UIApplication.shared.open(url)
                             #elseif os(macOS)
-                            NSWorkspace.shared.open(url)
+                                NSWorkspace.shared.open(url)
                             #endif
                         }
                     } label: {
@@ -105,6 +124,8 @@ struct SettingsView: View {
                         }
                     }
                     .foregroundColor(.primary)
+                    .accessibilityLabel("Rate on AppStore")
+                    .accessibilityHint("Double tap to rate this app on the App Store.")
                     VStack(alignment: .leading) {
                         Text("YAME")
                             .font(.headline)
@@ -112,30 +133,34 @@ struct SettingsView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("App version")
+                    .accessibilityValue(appVersionAndBuild)
                 }
             }
             .navigationTitle("Settings")
             #if os(iOS)
                 .navigationBarTitleDisplayMode(.inline)
             #endif
-                .onAppear {
-                    updateSpeechConfig()
-                }
-                .toolbar {
-                    ToolbarItem(placement: .automatic) {
-                        Button {
-                            dismiss()
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                        }
-                        .foregroundStyle(.secondary)
+            .onAppear {
+                updateSpeechConfig()
+            }
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
                     }
+                    .foregroundStyle(.secondary)
                 }
+            }
         }
     }
 
     var appVersionAndBuild: String {
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+        let version =
+            Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
         return "\(version) (\(build))"
     }
