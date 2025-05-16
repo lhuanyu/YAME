@@ -73,10 +73,10 @@ struct ContentView: View {
                         }
                     )
                     #if os(iOS)
-                        .aspectRatio(3 / 4, contentMode: .fit)
+                    .aspectRatio(3 / 4, contentMode: .fit)
                     #else
-                        .aspectRatio(16 / 9, contentMode: .fit)
-                        .frame(maxWidth: 750)
+                    .aspectRatio(16 / 9, contentMode: .fit)
+                    .frame(maxWidth: 750)
                     #endif
                     .accessibilityLabel("Video preview")
                     .accessibilityHint("Double tap to analyze the current frame.")
@@ -99,11 +99,13 @@ struct ContentView: View {
                         #endif
                     }
                     .overlay(alignment: .top) {
-                        stateView
-                            .offset(y: -40)
-                            .accessibilityElement()
-                            .accessibilityLabel("Status")
-                            .accessibilityValue(taskState.rawValue.capitalized.localized())
+                        if camera.isRunning {
+                            stateView
+                                .offset(y: -40)
+                                .accessibilityElement()
+                                .accessibilityLabel("Status")
+                                .accessibilityValue(taskState.rawValue.capitalized.localized())
+                        }
                     }
                     .overlay(alignment: .bottom) {
                         if settingsManager.captionEnabled {
@@ -112,11 +114,58 @@ struct ContentView: View {
                                 .accessibilityValue(model.output)
                         }
                     }
+                    .overlay(alignment: .center) {
+                        if camera.authorizationStatus == .denied {
+                            // Camera access denied overlay - iOS style card
+                            VStack(spacing: 20) {
+                                Spacer()
+                                Image(systemName: "video.slash.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 48, height: 48)
+                                    .foregroundColor(.white)
+                                    .padding(.top, 16)
+                                Text("Camera access denied")
+                                    .font(.title2.weight(.semibold))
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 24)
+                                Text("Please allow camera access in Settings to use this feature.")
+                                    .font(.body)
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 24)
+                                Button {
+                                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                                        #if os(iOS)
+                                            UIApplication.shared.open(url)
+                                        #elseif os(macOS)
+                                            NSWorkspace.shared.open(url)
+                                        #endif
+                                    }
+                                } label: {
+                                    Text("Go to Settings")
+                                        .font(.headline)
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 14)
+                                        .background(Color.accentColor)
+                                        .cornerRadius(12)
+                                        .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                        .padding(.horizontal, 24)
+                                }
+                                .buttonStyle(.plain)
+                                .contentShape(Rectangle())
+                                .accessibilityLabel("Go to Settings")
+                                Spacer()
+                            }
+                        }
+                    }
 
                     #if os(macOS)
-                        .frame(maxWidth: .infinity)
-                        .frame(minWidth: 500)
-                        .frame(minHeight: 375)
+                    .frame(maxWidth: .infinity)
+                    .frame(minWidth: 500)
+                    .frame(minHeight: 375)
                     #endif
                 }
 
@@ -136,27 +185,27 @@ struct ContentView: View {
                 #endif
             }
             #if !os(macOS)
-                .onAppear {
-                    // Prevent the screen from dimming or sleeping due to inactivity
-                    UIApplication.shared.isIdleTimerDisabled = true
-                    NotificationCenter.default.addObserver(
-                        forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
-                    ) { _ in
-                        withAnimation {
-                            isSpeaking = SpeechSynthesizer.isSpeaking
-                            updateTaskState()
-                        }
+            .onAppear {
+                // Prevent the screen from dimming or sleeping due to inactivity
+                UIApplication.shared.isIdleTimerDisabled = true
+                NotificationCenter.default.addObserver(
+                    forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
+                ) { _ in
+                    withAnimation {
+                        isSpeaking = SpeechSynthesizer.isSpeaking
+                        updateTaskState()
                     }
-                    isSpeaking = SpeechSynthesizer.isSpeaking
                 }
-                .background(.black)
-                .onDisappear {
-                    // Resumes normal idle timer behavior
-                    UIApplication.shared.isIdleTimerDisabled = false
-                    NotificationCenter.default.removeObserver(
-                        self, name: .speechSynthesizerSpeakingChanged, object: nil
-                    )
-                }
+                isSpeaking = SpeechSynthesizer.isSpeaking
+            }
+            .background(.black)
+            .onDisappear {
+                // Resumes normal idle timer behavior
+                UIApplication.shared.isIdleTimerDisabled = false
+                NotificationCenter.default.removeObserver(
+                    self, name: .speechSynthesizerSpeakingChanged, object: nil
+                )
+            }
             #endif
 
             // task to distribute video frames -- this will cancel
@@ -184,6 +233,7 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     menu
+                        .disabled(!camera.permissionGranted)
                 }
                 ToolbarItem(placement: toolbarItemPlacement) {
                     HStack {
@@ -221,6 +271,7 @@ struct ContentView: View {
                         )
                         .accessibilityHint("Double tap to toggle speech output.")
                     }
+                    .disabled(!camera.permissionGranted)
                 }
 
                 ToolbarItem(placement: .primaryAction) {
@@ -419,6 +470,7 @@ struct ContentView: View {
         }
         .padding(.vertical, 20)
         .padding(.horizontal, 20)
+        .disabled(!camera.permissionGranted)
     }
 
     func analyzeVideoFrames(_ frames: AsyncStream<CVImageBuffer>) async {

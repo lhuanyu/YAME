@@ -54,7 +54,10 @@ public class CameraController: NSObject, @unchecked Sendable {
         }
     }
 
-    private var permissionGranted = true
+    public private(set) var permissionGranted = true
+    public var authorizationStatus: AVAuthorizationStatus {
+        AVCaptureDevice.authorizationStatus(for: .video)
+    }
     private var captureSession: AVCaptureSession?
     private let sessionQueue = DispatchQueue(label: "sessionQueue", qos: .userInteractive)
     @objc dynamic private var rotationCoordinator: AVCaptureDevice.RotationCoordinator?
@@ -231,6 +234,7 @@ public class CameraController: NSObject, @unchecked Sendable {
     }
 
     public func setSampleBufferDelegate() {
+        guard permissionGranted else { return }
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "sampleBufferQueue"))
         withAnimation {
             self.isRunning = true
