@@ -109,7 +109,7 @@ struct SettingsView: View {
                     /// AppStore Rating
                     Button {
                         if let url = URL(
-                            string: "https://apps.apple.com/app/id6742433200?action=write-review")
+                            string: "https://apps.apple.com/app/id6745918382?action=write-review")
                         {
                             #if os(iOS)
                                 UIApplication.shared.open(url)
@@ -139,9 +139,6 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
-            #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
-            #endif
             .onAppear {
                 updateSpeechConfig()
             }

@@ -15,7 +15,6 @@ import SwiftUI
 
 @Observable
 public class CameraController: NSObject, @unchecked Sendable {
-
     private var framesContinuation: AsyncStream<CMSampleBuffer>.Continuation?
 
     public var backCamera = true {
@@ -34,7 +33,7 @@ public class CameraController: NSObject, @unchecked Sendable {
 
     // Toggle torch (flashlight) on/off
     private func toggleTorch(on: Bool) {
-        guard let device = self.device, device.hasTorch, device.position == .back else { return }
+        guard let device = device, device.hasTorch, device.position == .back else { return }
 
         do {
             try device.lockForConfiguration()
@@ -58,9 +57,10 @@ public class CameraController: NSObject, @unchecked Sendable {
     public var authorizationStatus: AVAuthorizationStatus {
         AVCaptureDevice.authorizationStatus(for: .video)
     }
+
     private var captureSession: AVCaptureSession?
     private let sessionQueue = DispatchQueue(label: "sessionQueue", qos: .userInteractive)
-    @objc dynamic private var rotationCoordinator: AVCaptureDevice.RotationCoordinator?
+    @objc private dynamic var rotationCoordinator: AVCaptureDevice.RotationCoordinator?
     private var rotationObservation: NSKeyValueObservation?
 
     public func attach(continuation: AsyncStream<CMSampleBuffer>.Continuation) {
@@ -80,7 +80,6 @@ public class CameraController: NSObject, @unchecked Sendable {
             captureSession?.stopRunning()
             captureSession = nil
         }
-
     }
 
     public func start() {
@@ -148,15 +147,15 @@ public class CameraController: NSObject, @unchecked Sendable {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             // The user has previously granted access to the camera.
-            self.permissionGranted = true
+            permissionGranted = true
 
         case .notDetermined:
             // The user has not yet been asked for camera access.
-            self.requestPermission()
+            requestPermission()
 
         // Combine the two other cases into the default case
         default:
-            self.permissionGranted = false
+            permissionGranted = false
         }
     }
 
@@ -197,7 +196,7 @@ public class CameraController: NSObject, @unchecked Sendable {
         }
 
         if devices.isEmpty {
-            self.devices = videoDeviceDiscoverySession.devices
+            devices = videoDeviceDiscoverySession.devices
         }
 
         guard
@@ -220,16 +219,18 @@ public class CameraController: NSObject, @unchecked Sendable {
         captureSession.sessionPreset = AVCaptureSession.Preset.hd1280x720
 
         #if os(iOS)
-            rotationCoordinator = AVCaptureDevice.RotationCoordinator(
-                device: videoDevice, previewLayer: nil)
-            rotationObservation = observe(
-                \.rotationCoordinator!.videoRotationAngleForHorizonLevelCapture,
-                options: [.initial, .new]
-            ) { [weak self] _, change in
-                if let nv = change.newValue {
-                    self?.updateRotation(rotation: nv)
-                }
-            }
+//            rotationCoordinator = AVCaptureDevice.RotationCoordinator(
+//                device: videoDevice, previewLayer: nil)
+//            rotationObservation = observe(
+//                \.rotationCoordinator!.videoRotationAngleForHorizonLevelCapture,
+//                options: [.initial, .new]
+//            ) { [weak self] _, change in
+//                if let nv = change.newValue {
+//                    print("Rotation: \(nv)")
+//                    self?.updateRotation(rotation: nv)
+//                }
+//            }
+            updateRotation(rotation: 90)
         #endif
     }
 
@@ -242,7 +243,6 @@ public class CameraController: NSObject, @unchecked Sendable {
     }
 
     public var isRunning: Bool = false
-
 }
 
 extension CameraController: AVCaptureVideoDataOutputSampleBufferDelegate {

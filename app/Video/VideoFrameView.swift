@@ -39,6 +39,9 @@ public struct VideoFrameView: View {
         VStack {
             if let videoFrame {
                 _ImageView(image: videoFrame)
+            } else {
+                ProgressView()
+                    .controlSize(.large)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

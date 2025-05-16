@@ -99,9 +99,13 @@ struct ContentView: View {
                         #endif
                     }
                     .overlay(alignment: .top) {
-                        if camera.isRunning {
+                        if camera.permissionGranted {
                             stateView
+                            #if os(iOS)
                                 .offset(y: -40)
+                            #elseif os(macOS)
+                                .padding(.top, 8)
+                            #endif
                                 .accessibilityElement()
                                 .accessibilityLabel("Status")
                                 .accessibilityValue(taskState.rawValue.capitalized.localized())
@@ -136,13 +140,11 @@ struct ContentView: View {
                                     .multilineTextAlignment(.center)
                                     .padding(.horizontal, 24)
                                 Button {
-                                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                                        #if os(iOS)
+                                    #if os(iOS)
+                                        if let url = URL(string: UIApplication.openSettingsURLString) {
                                             UIApplication.shared.open(url)
-                                        #elseif os(macOS)
-                                            NSWorkspace.shared.open(url)
-                                        #endif
-                                    }
+                                        }
+                                    #endif
                                 } label: {
                                     Text("Go to Settings")
                                         .font(.headline)
