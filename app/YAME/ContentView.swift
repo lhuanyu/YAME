@@ -234,7 +234,10 @@ struct ContentView: View {
                 Button {
                     selectedTask = task
                 } label: {
-                    Text(task.name)
+                    HStack {
+                        Image(systemName: task.symbol ?? "questionmark.circle")
+                        Text(task.name)
+                    }
                 }
             }
         } label: {

@@ -53,6 +53,17 @@
         }
       }
     },
+    "Descrption should be brief, about 15 words or less." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "描述文字应该简短，不超过30个字。"
+          }
+        }
+      }
+    },
     "Fast" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -92,6 +103,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "识别表情"
+          }
+        }
+      }
+    },
+    "Identify the facial expression in the image." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "识别图片中的面部表情。"
+          }
+        }
+      }
+    },
+    "Identify the traffic signal in the image." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "识别图片中的交通信号。"
           }
         }
       }
@@ -150,13 +183,24 @@
         }
       }
     },
-    "Output should be brief, about 15 words or less." : {
+    "Output should be one of 'rock', 'paper', or 'scissors'." : {
       "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "回复简短，不超过30个字。"
+            "value" : "输出应该是’石头’，’剪刀’和‘布’中的一种。"
+          }
+        }
+      }
+    },
+    "Output should include the color and shape of the signal." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输出应该包含交通信号的颜色，形状，数字等信息。"
           }
         }
       }

@@ -94,6 +94,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				SpeechSynthesizer.swift,
+				SystemVoice.swift,
 			);
 			target = 019A3E092D78E6A00055F93B /* YAME */;
 		};

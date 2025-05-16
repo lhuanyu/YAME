@@ -29,7 +29,7 @@ extension VisionTask {
     static let describeImage = VisionTask(
         name: "Describe Image".localized(),
         prompt: "Describe the image in English.".localized(),
-        promptSuffix: "Output should be brief, about 15 words or less.".localized(),
+        promptSuffix: "Descrption should be brief, about 15 words or less.".localized(),
         symbol: "eye",
         provider: .system
     )
@@ -47,7 +47,7 @@ extension VisionTask {
     static let recognizeText = VisionTask(
         name: "Recognize Text".localized(),
         prompt: "Recognize the text in the image.".localized(),
-        promptSuffix: "Output only the text in the image..".localized(),
+        promptSuffix: "Output only the text in the image.".localized(),
         symbol: "doc.plaintext",
         provider: .system
     )
