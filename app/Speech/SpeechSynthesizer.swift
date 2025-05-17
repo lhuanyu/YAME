@@ -8,18 +8,15 @@
 import AVFoundation
 import SwiftUI
 
-final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked Sendable {
+final class SpeechSynthesizer: NSObject, ObservableObject, AVSpeechSynthesizerDelegate, @unchecked Sendable {
     static let shared = SpeechSynthesizer()
 
     var isEnabled: Bool {
         SettingsManager.shared.speechEnabled
     }
 
-    static private(set) var isSpeaking: Bool = false {
-        didSet {
-            NotificationCenter.default.post(name: .speechSynthesizerSpeakingChanged, object: nil)
-        }
-    }
+    @Published var isSpeaking: Bool = false
+    
     private let synthesizer = AVSpeechSynthesizer()
     private override init() {
         super.init()
@@ -32,7 +29,6 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
         var rate: Float = AVSpeechUtteranceDefaultSpeechRate
         var volume: Float = 1.0
         var pitchMultiplier: Float = 1.0
-        var language: String = Locale.current.identifier
 
         init() {
             // Read default settings from UserDefaults
@@ -41,8 +37,6 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
             }
         }
     }
-
-    private let voice = AVSpeechSynthesisVoice(language: Locale.current.identifier)
 
     private var currentConfig = Config()
     private var speechFinishedContinuation: CheckedContinuation<Void, Never>?
@@ -55,8 +49,8 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
         utterance.rate = cfg.rate
         utterance.volume = cfg.volume
         utterance.pitchMultiplier = cfg.pitchMultiplier
-        utterance.voice = voice
-        Self.isSpeaking = true
+        utterance.voice = .siri
+        isSpeaking = true
         synthesizer.speak(utterance)
     }
 
@@ -83,7 +77,7 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
         // Extendable: Speech completion callback
         speechFinishedContinuation?.resume()
         speechFinishedContinuation = nil
-        Self.isSpeaking = false
+        isSpeaking = false
     }
     func speechSynthesizer(
         _ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance
@@ -91,12 +85,32 @@ final class SpeechSynthesizer: NSObject, AVSpeechSynthesizerDelegate, @unchecked
         // Extendable: Speech cancellation callback
         speechFinishedContinuation?.resume()
         speechFinishedContinuation = nil
-        Self.isSpeaking = false
+        isSpeaking = false
     }
 }
 
-// 通知名称扩展
-extension Notification.Name {
-    static let speechSynthesizerSpeakingChanged = Notification.Name(
-        "speechSynthesizerSpeakingChanged")
+extension AVSpeechSynthesisVoice {
+
+    static var siri: AVSpeechSynthesisVoice? {
+        let availableVoices = AVSpeechSynthesisVoice.speechVoices()
+        let currentLocaleID = Locale.current.identifier.replacingOccurrences(of: "_", with: "-").lowercased()
+
+        if let exactMatch = availableVoices.first(where: {
+            $0.language.lowercased() == currentLocaleID &&
+            $0.identifier.lowercased().contains("com.apple.ttsbundle.siri")
+        }) {
+            return exactMatch
+        }
+
+        if let languageCode = Locale.current.languageCode?.lowercased() {
+            if let partialMatch = availableVoices.first(where: {
+                $0.language.lowercased().hasPrefix(languageCode) &&
+                $0.identifier.lowercased().contains("com.apple.ttsbundle.siri")
+            }) {
+                return partialMatch
+            }
+        }
+
+        return AVSpeechSynthesisVoice(language: currentLocaleID)
+    }
 }

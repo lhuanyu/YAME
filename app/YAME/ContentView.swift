@@ -28,17 +28,21 @@ struct ContentView: View {
 
     @State private var isShowingSettings: Bool = false
 
-    // Add state variables for flashlight and speech
     @State private var isTorchEnabled: Bool = false
 
     @State private var selectedCameraType: CameraType = .continuous
-    @State private var isSpeaking: Bool = false
 
     @State private var taskState: VisionTaskState = .loading
 
     @ObservedObject var settingsManager = SettingsManager.shared
 
-    var toolbarItemPlacement: ToolbarItemPlacement {
+    @ObservedObject var speechSynthesizer = SpeechSynthesizer.shared
+
+    @State private var isShowingDeviceCapabilities: Bool = false
+
+    @State private var deviceCapabilityDetails: DeviceCapabilityDetails?
+
+    private var toolbarItemPlacement: ToolbarItemPlacement {
         var placement: ToolbarItemPlacement = .navigation
         #if os(iOS)
             placement = .topBarLeading
@@ -46,13 +50,13 @@ struct ContentView: View {
         return placement
     }
 
-    func updateTaskState() {
+    private func updateTaskState() {
         if !camera.isRunning {
             taskState = .paused
         } else {
             switch model.evaluationState {
             case .idle:
-                taskState = isSpeaking ? .speaking : .idle
+                taskState = speechSynthesizer.isSpeaking ? .speaking : .idle
             case .generatingResponse:
                 taskState = .thinking
             case .processingPrompt:
@@ -100,7 +104,7 @@ struct ContentView: View {
                     }
                     .overlay(alignment: .top) {
                         if camera.permissionGranted {
-                            stateView
+                            StateView(taskState: taskState)
                             #if os(iOS)
                                 .offset(y: -40)
                             #elseif os(macOS)
@@ -112,7 +116,7 @@ struct ContentView: View {
                         }
                     }
                     .overlay(alignment: .bottom) {
-                        if settingsManager.captionEnabled {
+                        if settingsManager.subtitleEnabled {
                             SubtitleView(text: $model.output)
                                 .accessibilityLabel("Subtitle")
                                 .accessibilityValue(model.output)
@@ -120,50 +124,9 @@ struct ContentView: View {
                     }
                     .overlay(alignment: .center) {
                         if camera.authorizationStatus == .denied {
-                            // Camera access denied overlay - iOS style card
-                            VStack(spacing: 20) {
-                                Spacer()
-                                Image(systemName: "video.slash.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 48, height: 48)
-                                    .foregroundColor(.white)
-                                    .padding(.top, 16)
-                                Text("Camera access denied")
-                                    .font(.title2.weight(.semibold))
-                                    .foregroundColor(.white)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, 24)
-                                Text("Please allow camera access in Settings to use this feature.")
-                                    .font(.body)
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal, 24)
-                                Button {
-                                    #if os(iOS)
-                                        if let url = URL(string: UIApplication.openSettingsURLString) {
-                                            UIApplication.shared.open(url)
-                                        }
-                                    #endif
-                                } label: {
-                                    Text("Go to Settings")
-                                        .font(.headline)
-                                        .foregroundColor(.white)
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 14)
-                                        .background(Color.accentColor)
-                                        .cornerRadius(12)
-                                        .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
-                                        .padding(.horizontal, 24)
-                                }
-                                .buttonStyle(.plain)
-                                .contentShape(Rectangle())
-                                .accessibilityLabel("Go to Settings")
-                                Spacer()
-                            }
+                            CameraAccessDeniedView()
                         }
                     }
-
                     #if os(macOS)
                     .frame(maxWidth: .infinity)
                     .frame(minWidth: 500)
@@ -171,54 +134,76 @@ struct ContentView: View {
                     #endif
                 }
 
-                bottomControls
+                BottomControls(
+                    isSpeaking: $speechSynthesizer.isSpeaking,
+                    settingsManager: settingsManager,
+                    cameraIsRunning: $camera.isRunning,
+                    isTorchEnabled: $isTorchEnabled,
+                    selectedCameraType: $selectedCameraType,
+                    permissionGranted: camera.permissionGranted,
+                    onSpeechToggle: {
+                        if settingsManager.speechEnabled {
+                            SpeechSynthesizer.shared.stop()
+                        } else {
+                            settingsManager.speechEnabled = true
+                        }
+                        hapticFeedback()
+                    },
+                    onCameraToggle: {
+                        withAnimation {
+                            if camera.isRunning {
+                                model.cancel()
+                                AudioServicesPlaySystemSound(1117)
+                            } else {
+                                model.clear()
+                                AudioServicesPlaySystemSound(1118)
+                            }
+                            camera.isRunning.toggle()
+                            updateTaskState()
+                            hapticFeedback()
+                        }
+                    },
+                    onSwitchCamera: {
+                        camera.backCamera.toggle()
+                        if !camera.backCamera, isTorchEnabled {
+                            isTorchEnabled = false
+                            camera.isTorchEnabled = false
+                        }
+                        if !camera.isRunning {
+                            model.clear()
+                            camera.isRunning = true
+                            AudioServicesPlaySystemSound(1118)
+                        }
+                        hapticFeedback()
+                    },
+                    hapticFeedback: hapticFeedback
+                )
 
                 Spacer()
             }
+            .background(.black)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .task {
                 #if targetEnvironment(simulator)
-
                 #else
-                    await camera.startAsync()
-                    try? await Task.sleep(for: .milliseconds(100))
-                    await model.load()
-                    camera.setSampleBufferDelegate()
+                    if testDeviceCapability() {
+                        await camera.startAsync()
+                        camera.setSampleBufferDelegate()
+                    }
                 #endif
             }
             #if !os(macOS)
             .onAppear {
-                // Prevent the screen from dimming or sleeping due to inactivity
                 UIApplication.shared.isIdleTimerDisabled = true
-                NotificationCenter.default.addObserver(
-                    forName: .speechSynthesizerSpeakingChanged, object: nil, queue: .main
-                ) { _ in
-                    withAnimation {
-                        isSpeaking = SpeechSynthesizer.isSpeaking
-                        updateTaskState()
-                    }
-                }
-                isSpeaking = SpeechSynthesizer.isSpeaking
             }
-            .background(.black)
             .onDisappear {
-                // Resumes normal idle timer behavior
                 UIApplication.shared.isIdleTimerDisabled = false
-                NotificationCenter.default.removeObserver(
-                    self, name: .speechSynthesizerSpeakingChanged, object: nil
-                )
             }
             #endif
-
-            // task to distribute video frames -- this will cancel
-            // and restart when the view is on/off screen.  note: it is
-            // important that this is here (attached to the VideoFrameView)
-            // rather than the outer view because this has the correct lifecycle
             .task {
                 if Task.isCancelled {
                     return
                 }
-
                 await distributeVideoFrames()
             }
             .onChange(of: model.evaluationState) { oldValue, newValue in
@@ -232,50 +217,39 @@ struct ContentView: View {
                     updateTaskState()
                 }
             }
+            .onChange(of: speechSynthesizer.isSpeaking) { _, _ in
+                withAnimation {
+                    updateTaskState()
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    menu
+                    MenuSelector(selectedTask: $selectedTask)
                         .disabled(!camera.permissionGranted)
                 }
                 ToolbarItem(placement: toolbarItemPlacement) {
-                    HStack {
-                        Button {
+                    ToolbarControls(
+                        isTorchEnabled: $isTorchEnabled,
+                        isSpeaking: $speechSynthesizer.isSpeaking,
+                        settingsManager: settingsManager,
+                        cameraPermissionGranted: camera.permissionGranted,
+                        toggleTorch: {
                             isTorchEnabled.toggle()
                             camera.isTorchEnabled = isTorchEnabled
                             hapticFeedback()
-                        } label: {
-                            Image(systemName: isTorchEnabled ? "bolt.circle" : "bolt.slash.circle")
-                                .font(.system(size: 16))
-                                .foregroundStyle(.white)
-                        }
-                        .accessibilityLabel(
-                            isTorchEnabled ? "Turn off flashlight" : "Turn on flashlight"
-                        )
-                        .accessibilityHint("Double tap to toggle the flashlight.")
-
-                        // Speech toggle
-                        Button {
+                        },
+                        toggleSpeech: {
                             settingsManager.speechEnabled.toggle()
                             if !settingsManager.speechEnabled {
                                 SpeechSynthesizer.shared.stop()
                             }
                             hapticFeedback()
-                        } label: {
-                            Image(
-                                systemName: settingsManager.speechEnabled
-                                    ? "speaker.circle" : "speaker.slash.circle"
-                            )
-                            .font(.system(size: 16))
-                            .foregroundStyle(.white)
+                        },
+                        openSettings: {
+                            isShowingSettings.toggle()
                         }
-                        .accessibilityLabel(
-                            settingsManager.speechEnabled ? "Disable speech" : "Enable speech"
-                        )
-                        .accessibilityHint("Double tap to toggle speech output.")
-                    }
-                    .disabled(!camera.permissionGranted)
+                    )
                 }
-
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         isShowingSettings.toggle()
@@ -291,188 +265,17 @@ struct ContentView: View {
             .sheet(isPresented: $isShowingSettings) {
                 SettingsView()
             }
-        }
-    }
-
-    var menu: some View {
-        Menu {
-            ForEach(VisionTask.allTasks, id: \.self) { task in
-                Button {
-                    selectedTask = task
-                } label: {
-                    HStack {
-                        Image(systemName: task.symbol ?? "questionmark.circle")
-                        Text(task.name)
-                    }
-                }
-                .accessibilityLabel(task.name)
-            }
-        } label: {
-            if let selectedTaskIcon = selectedTask.symbol {
-                Image(systemName: selectedTaskIcon)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.white)
-            } else {
-                Image(systemName: "ellipsis.circle")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.white)
-            }
-        }
-        .accessibilityLabel("Change vision task type. Current task is \(selectedTask.name)")
-    }
-
-    var stateView: some View {
-        HStack(spacing: 8) {
-            if taskState == .loading || taskState == .seeing {
-                ProgressView()
-                    .tint(taskState.foregroundColor)
-                    .controlSize(.small)
-            } else if !taskState.symbolName.isEmpty {
-                Image(systemName: taskState.symbolName)
-                    .font(.caption)
-            }
-
-            Text(taskState.rawValue.capitalized.localized())
-        }
-        .foregroundStyle(taskState.foregroundColor)
-        .font(.caption.weight(.semibold))
-        .padding(.vertical, 6.0)
-        .padding(.horizontal, 10.0)
-        .background {
-            #if os(iOS)
-                Capsule()
-                    .fill(.ultraThinMaterial)
-                    .overlay {
-                        Capsule()
-                            .fill(taskState.backgroundColor)
-                            .blendMode(.plusLighter)
-                    }
-                    .environment(\.colorScheme, .dark)
-            #else
-                Capsule()
-                    .fill(taskState.backgroundColor)
-            #endif
-        }
-        .shadow(color: .black.opacity(0.2), radius: 2, x: 0, y: 1)
-    }
-
-    var bottomControls: some View {
-        HStack(spacing: 0) {
-            Button(action: {
-                if settingsManager.speechEnabled {
-                    SpeechSynthesizer.shared.stop()
-                } else {
-                    settingsManager.speechEnabled = true
-                }
-                hapticFeedback()
-            }) {
-                ZStack {
-                    Circle()
-                        .fill(.ultraThinMaterial)
-                        .environment(\.colorScheme, .dark)
-                        .frame(width: 50, height: 50)
-
-                    if settingsManager.speechEnabled {
-                        if isSpeaking {
-                            Image(systemName: "speaker.wave.3.fill")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundStyle(.white)
-                                .symbolEffect(.bounce)
-                        } else {
-                            Image(systemName: "speaker.fill")
-                                .font(.system(size: 20, weight: .semibold))
-                                .foregroundStyle(.white)
+            .sheet(isPresented: $isShowingDeviceCapabilities) {
+                if let details = deviceCapabilityDetails {
+                    DeviceCapabilityView(details: details) {
+                        Task {
+                            await camera.startAsync()
+                            camera.setSampleBufferDelegate()
                         }
-                    } else {
-                        Image(systemName: "speaker.slash.fill")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(.white)
                     }
                 }
             }
-            .frame(width: 60, height: 60)
-            .accessibilityLabel(
-                settingsManager.speechEnabled
-                    ? (isSpeaking ? "Speaking" : "Speech enabled") : "Speech disabled"
-            )
-            .accessibilityHint("Double tap to toggle speech output.")
-
-            Spacer()
-
-            Button(action: {
-                withAnimation {
-                    if camera.isRunning {
-                        model.cancel()
-                        /// play pause sound
-                        AudioServicesPlaySystemSound(1117)
-                    } else {
-                        model.clear()
-                        /// play record sound
-                        AudioServicesPlaySystemSound(1118)
-                    }
-                    camera.isRunning.toggle()
-                    updateTaskState()
-                    hapticFeedback()
-                }
-            }) {
-                ZStack {
-                    Circle()
-                        .strokeBorder(Color.white, lineWidth: 3)
-                        .frame(width: 80, height: 80)
-
-                    // Animated shape that morphs between circle and square
-                    RoundedRectangle(cornerRadius: camera.isRunning ? 5 : 34)
-                        .fill(
-                            Color(.red)
-                        )
-                        .frame(
-                            width: camera.isRunning ? 30 : 68, height: camera.isRunning ? 30 : 68
-                        )
-                        .shadow(color: .black.opacity(0.2), radius: 2)
-                        .animation(.easeInOut(duration: 0.3), value: camera.isRunning)
-                }
-            }
-            .accessibilityLabel(camera.isRunning ? "Pause camera" : "Start camera")
-            .accessibilityHint(
-                camera.isRunning
-                    ? "Double tap to pause video analysis." : "Double tap to start video analysis.")
-
-            Spacer()
-
-            #if os(iOS)
-                Button(action: {
-                    camera.backCamera.toggle()
-                    // Reset torch when switching camera since it only works on back camera
-                    if !camera.backCamera, isTorchEnabled {
-                        isTorchEnabled = false
-                        camera.isTorchEnabled = false
-                    }
-                    if !camera.isRunning {
-                        model.clear()
-                        camera.isRunning = true
-                        AudioServicesPlaySystemSound(1118)
-                    }
-                    hapticFeedback()
-                }) {
-                    ZStack {
-                        Circle()
-                            .fill(.ultraThinMaterial)
-                            .environment(\.colorScheme, .dark)
-                            .frame(width: 50, height: 50)
-
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(.white)
-                    }
-                }
-                .frame(width: 60, height: 60)
-                .accessibilityLabel("Switch camera")
-                .accessibilityHint("Double tap to switch between front and back camera.")
-            #endif
         }
-        .padding(.vertical, 20)
-        .padding(.horizontal, 20)
-        .disabled(!camera.permissionGranted)
     }
 
     func analyzeVideoFrames(_ frames: AsyncStream<CVImageBuffer>) async {
@@ -575,6 +378,16 @@ struct ContentView: View {
             generator.prepare()
             generator.impactOccurred()
         #endif
+    }
+
+    private func testDeviceCapability() -> Bool {
+        let capability = DeviceCapability.testAndFetchDetails()
+        if !capability.performanceLevel.isSupported {
+            deviceCapabilityDetails = capability
+            isShowingDeviceCapabilities = true
+            return false
+        }
+        return true
     }
 }
 

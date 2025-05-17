@@ -243,6 +243,27 @@ public class CameraController: NSObject, @unchecked Sendable {
     }
 
     public var isRunning: Bool = false
+
+    public override init() {
+        super.init()
+        #if os(iOS)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        #endif
+    }
+
+    deinit {
+        #if os(iOS)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        #endif
+    }
+
+    #if os(iOS)
+    @objc private func handleDidEnterBackground() {
+        if isRunning {
+            isRunning = false
+        }
+    }
+    #endif
 }
 
 extension CameraController: AVCaptureVideoDataOutputSampleBufferDelegate {

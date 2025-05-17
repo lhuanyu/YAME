@@ -61,6 +61,26 @@
         }
       }
     },
+    "Continue" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续"
+          }
+        }
+      }
+    },
+    "Continue Anyway" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仍然继续"
+          }
+        }
+      }
+    },
     "Describe Image" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -78,7 +98,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "仅用中文描述图片。"
+            "value" : "始终用中文描述图片，"
           }
         }
       }
@@ -89,7 +109,17 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文字应该简短，不多于30个字。"
+            "value" : "描述文字应该简短，一般不多于30个字。"
+          }
+        }
+      }
+    },
+    "Device Capability Test" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设备能力测试"
           }
         }
       }
@@ -184,6 +214,16 @@
         }
       }
     },
+    "Double tap to test device capabilities." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "双击测试设备性能可用性。"
+          }
+        }
+      }
+    },
     "Double tap to toggle speech output." : {
       "localizations" : {
         "zh-Hans" : {
@@ -251,6 +291,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "反馈"
+          }
+        }
+      }
+    },
+    "Free Memory" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可用内存"
           }
         }
       }
@@ -341,6 +391,47 @@
         }
       }
     },
+    "Metal Supported" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Metal 支持"
+          }
+        }
+      }
+    },
+    "Minimal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低配置"
+          }
+        }
+      }
+    },
+    "Neural Engine Supported" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neural Engine 支持"
+          }
+        }
+      }
+    },
+    "No" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "否"
+          }
+        }
+      }
+    },
     "Normal" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -348,6 +439,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正常"
+          }
+        }
+      }
+    },
+    "Optimal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最佳配置"
           }
         }
       }
@@ -437,6 +539,28 @@
         }
       }
     },
+    "Recognize the text in the image." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "识别图像中出现的文字。"
+          }
+        }
+      }
+    },
+    "Recommended" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推荐配置"
+          }
+        }
+      }
+    },
     "Respond with a single number. If no hands are detected, respond with 0." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -518,16 +642,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "播报中"
-          }
-        }
-      }
-    },
-    "Speech" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "语音"
           }
         }
       }
@@ -643,6 +757,16 @@
         }
       }
     },
+    "Total Memory" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "总内存"
+          }
+        }
+      }
+    },
     "TTFT %@" : {
       "shouldTranslate" : false
     },
@@ -662,6 +786,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开手电筒"
+          }
+        }
+      }
+    },
+    "Unsupported" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支持"
           }
         }
       }
@@ -700,6 +835,56 @@
     },
     "YAME" : {
       "shouldTranslate" : false
+    },
+    "Yes" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "是"
+          }
+        }
+      }
+    },
+    "Your device is not supported. The app may not run properly." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的设备不受支持，应用可能无法正常运行。"
+          }
+        }
+      }
+    },
+    "Your device is optimal for this app. Enjoy the best experience!" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的设备为最佳配置，尽享极致体验！"
+          }
+        }
+      }
+    },
+    "Your device is recommended for running the app. You should have a good experience." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的设备为推荐配置，应该可以获得良好的体验。"
+          }
+        }
+      }
+    },
+    "Your device meets the minimal requirements. Performance may be limited." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的设备满足最低要求，性能可能受限。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -18,22 +18,30 @@ struct SettingsView: View {
 
     @Environment(\.dismiss) private var dismiss
 
+    @State var isShowingCapabilityTest = false
+
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Speech")) {
-                    Toggle("Speech Enabled", isOn: $settingsManager.speechEnabled)
-                        .accessibilityLabel("Speech enabled")
-                        .accessibilityHint("Double tap to toggle speech output.")
-                        .onChange(of: settingsManager.speechEnabled) { _, newValue in
-                            if !newValue && SpeechSynthesizer.isSpeaking {
-                                SpeechSynthesizer.shared.stop()
-                            }
+                Section {
+                    Toggle(isOn: $settingsManager.speechEnabled) {
+                        HStack {
+                            Image(systemName: "speaker.wave.2.fill")
+                            Text("Speech Enabled")
                         }
+                    }
+                    .accessibilityLabel("Speech enabled")
+                    .accessibilityHint("Double tap to toggle speech output.")
+                    .onChange(of: settingsManager.speechEnabled) { _, newValue in
+                        if !newValue && SpeechSynthesizer.shared.isSpeaking {
+                            SpeechSynthesizer.shared.stop()
+                        }
+                    }
 
                     if settingsManager.speechEnabled {
-                        VStack {
+                        VStack(alignment: .leading, spacing: 8) {
                             HStack {
+                                Image(systemName: "speedometer")
                                 Text("Speech Rate")
                                 Spacer()
                                 Text(speechRateDescription)
@@ -43,41 +51,65 @@ struct SettingsView: View {
                             .accessibilityLabel("Speech rate")
                             .accessibilityValue(speechRateDescription)
 
-                            Slider(value: $settingsManager.speechRate, in: minRate...maxRate) {
-                                Text("Speech Rate")
-                            } minimumValueLabel: {
-                                Image(systemName: "tortoise")
-                            } maximumValueLabel: {
-                                Image(systemName: "hare")
+                            HStack {
+                                Slider(value: $settingsManager.speechRate, in: minRate...maxRate) {
+                                    Text("Speech Rate")
+                                } minimumValueLabel: {
+                                    Image(systemName: "tortoise")
+                                } maximumValueLabel: {
+                                    Image(systemName: "hare")
+                                }
+                                .accessibilityLabel("Adjust speech rate")
+                                .accessibilityValue(speechRateDescription)
+                                .onChange(of: settingsManager.speechRate) { _, _ in
+                                    updateSpeechConfig()
+                                }
                             }
-                            .accessibilityLabel("Adjust speech rate")
-                            .accessibilityValue(speechRateDescription)
-                            .onChange(of: settingsManager.speechRate) { _, _ in
-                                updateSpeechConfig()
+                            HStack {
+                                Spacer()
+                                Button {
+                                    settingsManager.speechRate = defaultRate
+                                    updateSpeechConfig()
+                                } label: {
+                                    Text("Restore")
+                                        .font(.caption)
+                                }
+                                .accessibilityLabel("Restore default speech rate")
+                                .accessibilityHint("Double tap to reset speech rate to default.")
                             }
-
-                            Button("Restore") {
-                                settingsManager.speechRate = defaultRate
-                                updateSpeechConfig()
-                            }
-                            .font(.caption)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .accessibilityLabel("Restore default speech rate")
-                            .accessibilityHint("Double tap to reset speech rate to default.")
                         }
                     }
-                }
 
-                Section {
-                    Toggle("Subtitle", isOn: $settingsManager.captionEnabled)
-                        .accessibilityLabel("Subtitle enabled")
-                        .accessibilityHint("Double tap to toggle subtitle display.")
+                    Toggle(isOn: $settingsManager.subtitleEnabled) {
+                        HStack {
+                            Image(systemName: "captions.bubble.fill")
+                            Text("Subtitle")
+                        }
+                    }
+                    .accessibilityLabel("Subtitle enabled")
+                    .accessibilityHint("Double tap to toggle subtitle display.")
+
+                    Button {
+                        isShowingCapabilityTest = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "cpu.fill")
+                            Text("Device Capability Test")
+                        }
+                    }
+                    .foregroundColor(.primary)
+                    .accessibilityLabel("Device Capability Test")
+                    .accessibilityHint("Double tap to test device capabilities.")
+
                 }
 
                 Section(header: Text("About")) {
                     /// AcknowList
                     NavigationLink {
-                        AcknowListSwiftUIView()
+                        if let list = AcknowParser.defaultAcknowList() {
+                            let acknowledgements = list.acknowledgements + [.fastVLM]
+                            AcknowListSwiftUIView(acknowledgements: acknowledgements)
+                        }
                     } label: {
                         HStack {
                             Image(systemName: "heart.fill")
@@ -126,9 +158,11 @@ struct SettingsView: View {
                     .foregroundColor(.primary)
                     .accessibilityLabel("Rate on AppStore")
                     .accessibilityHint("Double tap to rate this app on the App Store.")
-                    VStack(alignment: .leading) {
+                    HStack {
+                        Image(systemName: "app.fill")
                         Text("YAME")
                             .font(.headline)
+                        Spacer()
                         Text(appVersionAndBuild)
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -141,6 +175,9 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .onAppear {
                 updateSpeechConfig()
+            }
+            .sheet(isPresented: $isShowingCapabilityTest) {
+                DeviceCapabilityView(details: DeviceCapability.testAndFetchDetails())
             }
             .toolbar {
                 ToolbarItem(placement: .automatic) {
